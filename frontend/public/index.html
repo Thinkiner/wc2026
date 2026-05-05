@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЧМ 2026 — Прогнозы</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{--bg:#080b12;--surface:#0f1420;--card:#141926;--border:#232d42;--accent:#f5c518;--accent2:#e05c1a;--text:#dde3f0;--muted:#5a6480;--green:#27ae60;}
+*{box-sizing:border-box;margin:0;padding:0;font-style:normal;}
+body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;}
+header{background:linear-gradient(90deg,#080b12,#0e1428 50%,#080b12);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:200;box-shadow:0 4px 30px rgba(0,0,0,.6);}
+.hi{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:54px;gap:12px;}
+.logo{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+.logo span{color:var(--accent2);}
+.hright{display:flex;align-items:center;gap:10px;}
+.nd{display:flex;gap:2px;}
+.nd button{background:none;border:none;color:var(--muted);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;padding:7px 10px;border-radius:6px;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.nd button:hover{color:var(--text);background:var(--border);}
+.nd button.active{color:#000;background:var(--accent);}
+/* user dropdown */
+.uwrap{position:relative;}
+.upill{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 6px;font-size:12px;font-weight:700;cursor:pointer;transition:border-color .15s;user-select:none;}
+.upill:hover{border-color:var(--accent);}
+.udot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#000;flex-shrink:0;}
+.abadge{background:var(--accent2);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.5px;}
+.udd{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--border);border-radius:10px;min-width:190px;box-shadow:0 8px 30px rgba(0,0,0,.5);overflow:hidden;z-index:400;}
+.udd.open{display:block;}
+.udinfo{padding:12px 14px;border-bottom:1px solid var(--border);}
+.udname{font-weight:800;font-size:13px;}
+.udemail{font-size:11px;color:var(--muted);margin-top:2px;}
+.udbtn{display:flex;align-items:center;gap:8px;width:100%;padding:11px 14px;background:none;border:none;color:var(--text);font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;text-align:left;}
+.udbtn:hover{background:rgba(231,76,60,.12);color:#e74c3c;}
+/* mobile nav */
+.nm{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:#0d1020;border-top:1.5px solid var(--border);padding:6px 0 env(safe-area-inset-bottom,6px);justify-content:space-around;box-shadow:0 -4px 20px rgba(0,0,0,.5);}
+.nm button{background:none;border:none;color:var(--muted);font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:8px;cursor:pointer;transition:all .15s;min-width:44px;}
+.nm button .ni{font-size:19px;line-height:1;}
+.nm button.active{color:var(--accent);}
+@media(max-width:700px){
+  .nd{display:none!important;}
+  .nm[data-on="1"]{display:flex!important;}
+  main{padding:14px 10px 86px!important;}
+  .hi{height:46px;}
+  .logo{font-size:18px;}
+}
+main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
+.page{display:none;animation:fi .2s ease;}
+.page.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.stitle{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:4px;color:var(--accent);margin-bottom:4px;}
+.ssub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 13px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.tab:hover{border-color:var(--accent);color:var(--text);}
+.tab.active{background:var(--accent);color:#000;border-color:var(--accent);}
+/* groups */
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+@media(max-width:600px){.ggrid{grid-template-columns:1fr;}}
+.gc{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.gh{background:linear-gradient(90deg,rgba(245,197,24,.12),transparent);border-bottom:1px solid var(--border);padding:9px 14px;}
+.gl{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--accent);letter-spacing:2px;}
+.gt{width:100%;border-collapse:collapse;font-size:12px;}
+.gt th{padding:5px 9px;text-align:left;color:var(--muted);font-size:10px;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.gt th.c{text-align:center;}
+.gt td{padding:8px 9px;border-bottom:1px solid rgba(35,45,66,.5);}
+.gt tr:last-child td{border-bottom:none;}
+.tc{display:flex;align-items:center;gap:6px;font-weight:600;font-size:12px;}
+.sc{text-align:center;color:var(--muted);}
+.pc{text-align:center;font-weight:800;color:var(--accent);}
+.qr{background:rgba(39,174,96,.07);}
+.tr3{background:rgba(245,197,24,.04);}
+.er{opacity:.4;}
+/* match cards */
+.ml{display:flex;flex-direction:column;gap:10px;}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.mm{min-width:62px;flex-shrink:0;}
+.mg{color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.5px;}
+.sb{padding:3px 7px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block;margin-top:4px;}
+.sb.done{background:rgba(39,174,96,.15);color:var(--green);}
+.sb.up{background:rgba(90,100,128,.15);color:var(--muted);}
+.mts{flex:1;display:flex;align-items:center;gap:6px;justify-content:center;min-width:0;}
+.mt{display:flex;align-items:center;gap:5px;font-weight:700;font-size:13px;min-width:0;flex:1;}
+.mt.r{flex-direction:row-reverse;text-align:right;}
+.sw{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.si{width:40px;height:40px;background:var(--surface);border:2px solid var(--border);border-radius:8px;color:var(--text);font-size:18px;font-weight:800;text-align:center;font-family:'Bebas Neue',cursive;outline:none;transition:border-color .15s;-moz-appearance:textfield;}
+.si::-webkit-inner-spin-button,.si::-webkit-outer-spin-button{-webkit-appearance:none;}
+.si:focus{border-color:var(--accent);}
+.sep{color:var(--muted);font-size:16px;font-family:'Bebas Neue',cursive;}
+.sdisp{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.sbox{width:40px;height:40px;background:var(--surface);border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);}
+.sbox.has{border-color:rgba(245,197,24,.3);color:var(--accent);}
+@media(max-width:460px){.mc{padding:9px;gap:6px;}.mm{min-width:50px;}.mt{font-size:11px;gap:3px;}.si{width:34px;height:34px;font-size:15px;}.sbox{width:34px;height:34px;font-size:16px;}}
+/* playoff bracket */
+.bwrap{overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch;}
+.bracket{display:flex;align-items:stretch;min-width:680px;}
+.bcol{flex:1;display:flex;flex-direction:column;}
+.bhead{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:var(--muted);text-align:center;padding:10px 5px;border-bottom:1px solid var(--border);}
+.bbody{flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:8px 4px;gap:8px;}
+.bm{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.bt{display:flex;align-items:center;gap:5px;padding:7px 9px;font-size:11px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.bt:last-child{border-bottom:none;}
+.bt:hover{background:rgba(245,197,24,.08);}
+.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;}
+.bt.lose{opacity:.35;}
+.bt.tbd{color:var(--muted);}
+.bt.ro{cursor:default;}.bt.ro:hover{background:none;}
+.bfl{font-size:13px;}
+.bsi{margin-left:auto;width:24px;height:24px;background:var(--surface);border:1.5px solid var(--border);border-radius:4px;color:var(--text);text-align:center;font-size:12px;font-weight:800;font-family:'Bebas Neue',cursive;outline:none;flex-shrink:0;-moz-appearance:textfield;}
+.bsi::-webkit-inner-spin-button,.bsi::-webkit-outer-spin-button{-webkit-appearance:none;}
+.bsi:focus{border-color:var(--accent);}
+/* leaderboard */
+.scorebox{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;gap:22px;flex-wrap:wrap;}
+.si2{display:flex;align-items:center;gap:8px;}
+.spts{font-family:'Bebas Neue',cursive;font-size:24px;color:var(--accent);min-width:26px;}
+.sdsc{font-size:12px;color:var(--muted);}
+.lr{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.lr.me{border-color:var(--accent);background:rgba(245,197,24,.04);}
+.lrk{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--border);min-width:34px;text-align:center;}
+.lrk.r1{color:#f5c518;}.lrk.r2{color:#b0b8c8;}.lrk.r3{color:#c87533;}
+.lpts{font-family:'Bebas Neue',cursive;font-size:30px;color:var(--accent);}
+.ldet{font-size:11px;color:var(--muted);line-height:1.7;}
+.bdg{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-right:3px;}
+.bex{background:rgba(39,174,96,.15);color:var(--green);}
+.brs{background:rgba(245,197,24,.12);color:var(--accent);}
+/* settings */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;}
+@media(max-width:560px){.sgrid{grid-template-columns:1fr;}}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.scard h3{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.urow{display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);}
+.urow:last-of-type{border-bottom:none;}
+.uav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;color:#000;margin-top:2px;}
+label{display:block;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;}
+input[type=text],input[type=email],input[type=password]{width:100%;padding:9px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:'Manrope',sans-serif;font-size:13px;outline:none;transition:border-color .15s;margin-bottom:10px;}
+input[type=text]:focus,input[type=email]:focus,input[type=password]:focus{border-color:var(--accent);}
+.btn{padding:8px 15px;border-radius:7px;border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;transition:all .15s;display:inline-block;}
+.bp{background:var(--accent);color:#000;}.bp:hover{background:#ffd740;}
+.bs{background:var(--border);color:var(--text);}.bs:hover{background:#2e3a55;}
+.bd{background:rgba(192,57,43,.2);color:#e74c3c;border:1px solid rgba(192,57,43,.3);}.bd:hover{background:rgba(192,57,43,.35);}
+.bsm{padding:6px 12px;font-size:12px;}.bxs{padding:3px 7px;font-size:10px;}
+.dbtns{display:flex;flex-direction:column;gap:8px;}
+.fw{width:100%;}
+/* auth */
+#as{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;}
+.abox{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:100%;max-width:380px;}
+.alogo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;color:var(--accent);margin-bottom:4px;}
+.alogo span{color:var(--accent2);}
+.asub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+.atabs{display:flex;gap:8px;margin-bottom:20px;}
+.atab{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.atab.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.err{color:#e74c3c;font-size:12px;margin-top:-6px;margin-bottom:10px;display:none;}
+.err.show{display:block;}
+/* toast */
+#toast{position:fixed;bottom:76px;right:16px;background:var(--accent);color:#000;padding:10px 16px;border-radius:8px;font-weight:700;font-size:13px;opacity:0;transform:translateY(8px);transition:all .25s;z-index:999;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+#toast.show{opacity:1;transform:translateY(0);}
+.empty{text-align:center;padding:40px 16px;color:var(--muted);}
+.ei{font-size:36px;margin-bottom:8px;}
+/* subtabs */
+.stabs{display:flex;gap:8px;margin-bottom:16px;}
+.stab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;}
+.stab.active{background:var(--accent);color:#000;border-color:var(--accent);}
+
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="as">
+  <div class="abox">
+    <div class="alogo">ЧМ <span>2026</span></div>
+    <div class="asub">Турнир прогнозов · Войдите или зарегистрируйтесь</div>
+    <div class="atabs">
+      <button class="atab active" onclick="swTab('login')">Войти</button>
+      <button class="atab" onclick="swTab('reg')">Регистрация</button>
+    </div>
+    <div id="tlogin">
+      <label>Email</label><input type="email" id="le" placeholder="your@email.com">
+      <label>Пароль</label><input type="password" id="lp" placeholder="Пароль" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="err" id="lerr"></div>
+      <button class="btn bp fw" onclick="doLogin()">Войти</button>
+    </div>
+    <div id="treg" style="display:none">
+      <label>Имя</label><input type="text" id="rn" placeholder="Как вас зовут?" maxlength="30">
+      <label>Email</label><input type="email" id="re" placeholder="your@email.com">
+      <label>Пароль</label><input type="password" id="rp" placeholder="Минимум 4 символа" onkeydown="if(event.key==='Enter')doReg()">
+      <div class="err" id="rerr"></div>
+      <button class="btn bp fw" onclick="doReg()">Зарегистрироваться</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<header>
+  <div class="hi">
+    <div class="logo">ЧМ <span>2026</span></div>
+    <div class="hright">
+      <nav class="nd" id="dnav"></nav>
+      <div class="uwrap">
+        <div class="upill" onclick="toggleDD()">
+          <div class="udot" id="udot">?</div>
+          <span id="uname">—</span>
+          <span id="ubadge" class="abadge" style="display:none">ADMIN</span>
+          <span style="color:var(--muted);font-size:10px;margin-left:2px">▾</span>
+        </div>
+        <div class="udd" id="udd">
+          <div class="udinfo"><div class="udname" id="ddname">—</div><div class="udemail" id="ddemail">—</div></div>
+          <button class="udbtn" onclick="logout()">🚪 Выйти</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<nav class="nm" id="mnav" data-on="0"></nav>
+
+<main>
+  <div class="page" id="page-predict"></div>
+  <div class="page" id="page-groups"></div>
+  <div class="page" id="page-playoff"></div>
+  <div class="page" id="page-leaderboard"></div>
+  <div class="page" id="page-matches"></div>
+  <div class="page" id="page-settings"></div>
+</main>
+<div id="toast"></div>
+
+<script src="/api.js"></script>
+<script>
+// ── STATIC DATA ──────────────────────────────────
+const GROUPS={
+  A:[{name:'Мексика',flag:'🇲🇽'},{name:'ЮАР',flag:'🇿🇦'},{name:'Южная Корея',flag:'🇰🇷'},{name:'Чехия',flag:'🇨🇿'}],
+  B:[{name:'Канада',flag:'🇨🇦'},{name:'Швейцария',flag:'🇨🇭'},{name:'Катар',flag:'🇶🇦'},{name:'Босния',flag:'🇧🇦'}],
+  C:[{name:'Бразилия',flag:'🇧🇷'},{name:'Марокко',flag:'🇲🇦'},{name:'Гаити',flag:'🇭🇹'},{name:'Шотландия',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'}],
+  D:[{name:'США',flag:'🇺🇸'},{name:'Парагвай',flag:'🇵🇾'},{name:'Австралия',flag:'🇦🇺'},{name:'Турция',flag:'🇹🇷'}],
+  E:[{name:'Германия',flag:'🇩🇪'},{name:'Кот-д\'Ивуар',flag:'🇨🇮'},{name:'Эквадор',flag:'🇪🇨'},{name:'Кюрасао',flag:'🇨🇼'}],
+  F:[{name:'Нидерланды',flag:'🇳🇱'},{name:'Швеция',flag:'🇸🇪'},{name:'Тунис',flag:'🇹🇳'},{name:'Япония',flag:'🇯🇵'}],
+  G:[{name:'Бельгия',flag:'🇧🇪'},{name:'Египет',flag:'🇪🇬'},{name:'Иран',flag:'🇮🇷'},{name:'Новая Зеландия',flag:'🇳🇿'}],
+  H:[{name:'Испания',flag:'🇪🇸'},{name:'Кабо-Верде',flag:'🇨🇻'},{name:'Саудовская Аравия',flag:'🇸🇦'},{name:'Уругвай',flag:'🇺🇾'}],
+  I:[{name:'Франция',flag:'🇫🇷'},{name:'Сенегал',flag:'🇸🇳'},{name:'Ирак',flag:'🇮🇶'},{name:'Норвегия',flag:'🇳🇴'}],
+  J:[{name:'Аргентина',flag:'🇦🇷'},{name:'Алжир',flag:'🇩🇿'},{name:'Австрия',flag:'🇦🇹'},{name:'Иордания',flag:'🇯🇴'}],
+  K:[{name:'Португалия',flag:'🇵🇹'},{name:'ДР Конго',flag:'🇨🇩'},{name:'Узбекистан',flag:'🇺🇿'},{name:'Колумбия',flag:'🇨🇴'}],
+  L:[{name:'Англия',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'Хорватия',flag:'🇭🇷'},{name:'Гана',flag:'🇬🇭'},{name:'Панама',flag:'🇵🇦'}],
+};
+
+// Verified schedule from FIFA/NBC Sports/MLS Soccer
+// Group B тур 1: Катар vs Швейцария 13 июня (не 12го!)
+// Группа E тур 3: Эквадор vs Кот-д'Ивуар 25 июня (исправлено)
+// Группа J тур 3: Алжир vs Австрия (не Иордания vs Алжир) 26 июня — оба верны
+const SCH=[
+  // Тур 1
+  {d:'2026-06-11',h:'Мексика',a:'ЮАР',g:'A'},
+  {d:'2026-06-11',h:'Южная Корея',a:'Чехия',g:'A'},
+  {d:'2026-06-12',h:'США',a:'Парагвай',g:'D'},
+  {d:'2026-06-12',h:'Канада',a:'Босния',g:'B'},
+  {d:'2026-06-13',h:'Катар',a:'Швейцария',g:'B'},
+  {d:'2026-06-13',h:'Бразилия',a:'Марокко',g:'C'},
+  {d:'2026-06-13',h:'Гаити',a:'Шотландия',g:'C'},
+  {d:'2026-06-13',h:'Австралия',a:'Турция',g:'D'},
+  {d:'2026-06-14',h:'Германия',a:'Кюрасао',g:'E'},
+  {d:'2026-06-14',h:'Швеция',a:'Тунис',g:'F'},
+  {d:'2026-06-14',h:'Нидерланды',a:'Япония',g:'F'},
+  {d:'2026-06-15',h:'Испания',a:'Кабо-Верде',g:'H'},
+  {d:'2026-06-15',h:'Иран',a:'Новая Зеландия',g:'G'},
+  {d:'2026-06-15',h:'Саудовская Аравия',a:'Уругвай',g:'H'},
+  {d:'2026-06-16',h:'Франция',a:'Сенегал',g:'I'},
+  {d:'2026-06-16',h:'Ирак',a:'Норвегия',g:'I'},
+  {d:'2026-06-16',h:'Аргентина',a:'Алжир',g:'J'},
+  {d:'2026-06-17',h:'Англия',a:'Хорватия',g:'L'},
+  {d:'2026-06-17',h:'Португалия',a:'ДР Конго',g:'K'},
+  {d:'2026-06-17',h:'Бельгия',a:'Египет',g:'G'},
+  // Тур 2
+  {d:'2026-06-18',h:'Чехия',a:'ЮАР',g:'A'},
+  {d:'2026-06-18',h:'Мексика',a:'Южная Корея',g:'A'},
+  {d:'2026-06-18',h:'Швейцария',a:'Босния',g:'B'},
+  {d:'2026-06-18',h:'Канада',a:'Катар',g:'B'},
+  {d:'2026-06-19',h:'США',a:'Австралия',g:'D'},
+  {d:'2026-06-19',h:'Шотландия',a:'Марокко',g:'C'},
+  {d:'2026-06-19',h:'Бразилия',a:'Гаити',g:'C'},
+  {d:'2026-06-19',h:'Турция',a:'Парагвай',g:'D'},
+  {d:'2026-06-20',h:'Эквадор',a:'Кюрасао',g:'E'},
+  {d:'2026-06-20',h:'Тунис',a:'Япония',g:'F'},
+  {d:'2026-06-20',h:'Нидерланды',a:'Швеция',g:'F'},
+  {d:'2026-06-20',h:'Австрия',a:'Иордания',g:'J'},
+  {d:'2026-06-21',h:'Испания',a:'Саудовская Аравия',g:'H'},
+  {d:'2026-06-21',h:'Бельгия',a:'Иран',g:'G'},
+  {d:'2026-06-21',h:'Уругвай',a:'Кабо-Верде',g:'H'},
+  {d:'2026-06-21',h:'Аргентина',a:'Австрия',g:'J'},
+  {d:'2026-06-22',h:'Норвегия',a:'Сенегал',g:'I'},
+  {d:'2026-06-22',h:'Франция',a:'Ирак',g:'I'},
+  {d:'2026-06-22',h:'Гана',a:'Панама',g:'L'},
+  {d:'2026-06-22',h:'Колумбия',a:'ДР Конго',g:'K'},
+  {d:'2026-06-23',h:'Кот-д\'Ивуар',a:'Эквадор',g:'E'},
+  {d:'2026-06-23',h:'Германия',a:'Кот-д\'Ивуар',g:'E'},
+  {d:'2026-06-23',h:'Португалия',a:'Узбекистан',g:'K'},
+  {d:'2026-06-23',h:'Колумбия',a:'ДР Конго',g:'K'},
+  // Тур 3 (финальный — одновременные матчи)
+  {d:'2026-06-24',h:'Чехия',a:'Мексика',g:'A'},
+  {d:'2026-06-24',h:'ЮАР',a:'Южная Корея',g:'A'},
+  {d:'2026-06-24',h:'Швейцария',a:'Канада',g:'B'},
+  {d:'2026-06-24',h:'Босния',a:'Катар',g:'B'},
+  {d:'2026-06-24',h:'Шотландия',a:'Бразилия',g:'C'},
+  {d:'2026-06-24',h:'Марокко',a:'Гаити',g:'C'},
+  {d:'2026-06-25',h:'Турция',a:'США',g:'D'},
+  {d:'2026-06-25',h:'Парагвай',a:'Австралия',g:'D'},
+  {d:'2026-06-25',h:'Кюрасао',a:'Германия',g:'E'},
+  {d:'2026-06-25',h:'Эквадор',a:'Кот-д\'Ивуар',g:'E'},
+  {d:'2026-06-25',h:'Япония',a:'Швеция',g:'F'},
+  {d:'2026-06-25',h:'Тунис',a:'Нидерланды',g:'F'},
+  {d:'2026-06-26',h:'Египет',a:'Новая Зеландия',g:'G'},
+  {d:'2026-06-26',h:'Иран',a:'Бельгия',g:'G'},
+  {d:'2026-06-26',h:'Уругвай',a:'Испания',g:'H'},
+  {d:'2026-06-26',h:'Кабо-Верде',a:'Саудовская Аравия',g:'H'},
+  {d:'2026-06-26',h:'Иордания',a:'Алжир',g:'J'},
+  {d:'2026-06-26',h:'Австрия',a:'Аргентина',g:'J'},
+  {d:'2026-06-27',h:'Норвегия',a:'Ирак',g:'I'},
+  {d:'2026-06-27',h:'Сенегал',a:'Франция',g:'I'},
+  {d:'2026-06-27',h:'ДР Конго',a:'Узбекистан',g:'K'},
+  {d:'2026-06-27',h:'Колумбия',a:'Португалия',g:'K'},
+  {d:'2026-06-28',h:'Хорватия',a:'Гана',g:'L'},
+  {d:'2026-06-28',h:'Панама',a:'Англия',g:'L'},
+];
+
+function buildMatches(){return SCH.map((s,i)=>({id:i+1,group:s.g,home:s.h,away:s.a,date:s.d,homeScore:null,awayScore:null}));}
+
+const POR=[
+  {id:'r32',label:'1/16 финала',slots:16},
+  {id:'r16',label:'1/8 финала',slots:8},
+  {id:'qf',label:'Четвертьфинал',slots:4},
+  {id:'sf',label:'Полуфинал',slots:2},
+  {id:'fin',label:'Финал',slots:1},
+];
+function defPO(){const o={};POR.forEach(r=>{o[r.id]=Array.from({length:r.slots},()=>({home:'',away:'',homeScore:null,awayScore:null,winner:null}));});return o;}
+
+const COLORS=['#f5c518','#e05c1a','#27ae60','#3498db','#9b59b6','#e74c3c','#1abc9c','#f39c12'];
+
+// ── APP STATE ────────────────────────────────────
+// Данные теперь хранятся на сервере — здесь только кеш текущей сессии
+let session = getUser();     // из localStorage (токен/юзер сохраняется при логине)
+let results = {};            // { matchId: {homeScore, awayScore} }
+let myPreds = { group: {}, playoff: {} };
+let allPreds = {};           // только для админа
+let playoffState = {};       // состояние сетки плей-офф
+let users = [];              // список игроков (только для админа)
+
+let curPage = '', curDate = null, curPredDate = null, curPredTab = 'group';
+
+// ── TOAST ─────────────────────────────────────────
+let tt;
+function toast(m, err) {
+  const e = document.getElementById('toast');
+  e.textContent = m;
+  e.style.background = err ? '#c0392b' : 'var(--accent)';
+  e.style.color = err ? '#fff' : '#000';
+  e.classList.add('show');
+  clearTimeout(tt);
+  tt = setTimeout(() => e.classList.remove('show'), 2500);
+}
+
+// ── AUTH UI ───────────────────────────────────────
+function swTab(t) {
+  document.querySelectorAll('.atab').forEach((b, i) => b.classList.toggle('active', (i === 0 && t === 'login') || (i === 1 && t === 'reg')));
+  document.getElementById('tlogin').style.display = t === 'login' ? '' : 'none';
+  document.getElementById('treg').style.display = t === 'reg' ? '' : 'none';
+}
+function shErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.classList.add('show'); }
+function hiErr(id) { document.getElementById(id).classList.remove('show'); }
+
+async function doLogin() {
+  hiErr('lerr');
+  const email = document.getElementById('le').value.trim();
+  const pass = document.getElementById('lp').value;
+  if (!email || !pass) { shErr('lerr', 'Заполните все поля'); return; }
+  try {
+    session = await apiLogin(email, pass);
+    await startApp();
+  } catch (e) { shErr('lerr', e.message); }
+}
+
+async function doReg() {
+  hiErr('rerr');
+  const name = document.getElementById('rn').value.trim();
+  const email = document.getElementById('re').value.trim();
+  const pass = document.getElementById('rp').value;
+  if (!name || !email || !pass) { shErr('rerr', 'Заполните все поля'); return; }
+  try {
+    session = await apiRegister(name, email, pass);
+    await startApp();
+  } catch (e) { shErr('rerr', e.message); }
+}
+
+function logout() {
+  toggleDD(true);
+  apiLogout();
+  session = null; results = {}; myPreds = { group: {}, playoff: {} }; allPreds = {}; playoffState = {}; users = [];
+  document.getElementById('as').style.display = 'flex';
+  document.querySelector('header').style.display = 'none';
+  document.querySelector('main').style.display = 'none';
+  document.getElementById('mnav').setAttribute('data-on', '0');
+}
+
+async function startApp() {
+  document.getElementById('as').style.display = 'none';
+  document.querySelector('header').style.display = '';
+  document.querySelector('main').style.display = '';
+  document.getElementById('mnav').setAttribute('data-on', '1');
+  // Заполняем шапку
+  document.getElementById('udot').textContent = session.name[0].toUpperCase();
+  document.getElementById('udot').style.background = session.color;
+  document.getElementById('uname').textContent = session.name;
+  document.getElementById('ubadge').style.display = session.isAdmin ? '' : 'none';
+  document.getElementById('ddname').textContent = session.name;
+  document.getElementById('ddemail').textContent = session.email;
+  buildNav();
+  // Загружаем данные с сервера параллельно
+  await loadAllData();
+  goP(session.isAdmin ? 'groups' : 'predict');
+}
+
+async function loadAllData() {
+  try {
+    // Все пользователи делают эти запросы
+    const [res, preds, po] = await Promise.all([
+      apiGetResults(),
+      apiGetMyPredictions(),
+      apiGetPlayoff(),
+    ]);
+    results = res;
+    myPreds = preds;
+    playoffState = po;
+    // Только админ грузит всех игроков и их прогнозы
+    if (session.isAdmin) {
+      const [u, ap] = await Promise.all([apiGetUsers(), apiGetAllPredictions()]);
+      users = u;
+      allPreds = ap;
+    }
+  } catch (e) {
+    toast('Ошибка загрузки данных: ' + e.message, true);
+  }
+}
+
+// ── USER DROPDOWN ────────────────────────────────
+function toggleDD(forceClose) {
+  const d = document.getElementById('udd');
+  if (forceClose) d.classList.remove('open');
+  else d.classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const w = document.querySelector('.uwrap');
+  if (w && !w.contains(e.target)) document.getElementById('udd').classList.remove('open');
+});
+
+// ── NAV ──────────────────────────────────────────
+function getPages() {
+  if (session && session.isAdmin) return [
+    { id: 'groups', label: 'Группы', icon: '🏟' },
+    { id: 'predict', label: 'Прогнозы', icon: '✏️' },
+    { id: 'matches', label: 'Матчи', icon: '📅' },
+    { id: 'playoff', label: 'Плей-офф', icon: '🏆' },
+    { id: 'leaderboard', label: 'Таблица', icon: '📊' },
+    { id: 'settings', label: 'Участники', icon: '⚙️' },
+  ];
+  return [
+    { id: 'predict', label: 'Прогнозы', icon: '✏️' },
+    { id: 'groups', label: 'Группы', icon: '🏟' },
+    { id: 'playoff', label: 'Плей-офф', icon: '🏆' },
+    { id: 'leaderboard', label: 'Таблица', icon: '📊' },
+  ];
+}
+function buildNav() {
+  const pages = getPages();
+  document.getElementById('dnav').innerHTML = pages.map(p => `<button onclick="goP('${p.id}')">${p.label}</button>`).join('');
+  document.getElementById('mnav').innerHTML = pages.map(p => `<button onclick="goP('${p.id}')"><span class="ni">${p.icon}</span>${p.label}</button>`).join('');
+}
+function goP(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  const pages = getPages();
+  document.querySelectorAll('#dnav button,#mnav button').forEach((b, i) => b.classList.toggle('active', pages[i % pages.length] && pages[i % pages.length].id === p));
+  curPage = p; rp(p);
+}
+function rp(p) {
+  if (p === 'groups') rGroups();
+  else if (p === 'matches') rMatches();
+  else if (p === 'playoff') rPlayoff();
+  else if (p === 'predict') rPredict();
+  else if (p === 'leaderboard') rLB();
+  else if (p === 'settings') rSettings();
+}
+
+// ── DATE FORMAT ───────────────────────────────────
+const RUD = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+function fmtD(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return `${RUD[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getFullYear()).slice(2)}`;
+}
+
+// ── GROUPS ───────────────────────────────────────
+function standings(grp) {
+  const ts = GROUPS[grp].map(t => ({ ...t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }));
+  SCH.filter(s => s.g === grp).forEach((s, idx) => {
+    const mId = SCH.indexOf(s) + 1;
+    const r = results[mId];
+    if (!r) return;
+    const h = ts.find(t => t.name === s.h), a = ts.find(t => t.name === s.a);
+    if (!h || !a) return;
+    h.p++; a.p++; h.gf += r.homeScore; h.ga += r.awayScore; a.gf += r.awayScore; a.ga += r.homeScore;
+    if (r.homeScore > r.awayScore) { h.w++; h.pts += 3; a.l++; }
+    else if (r.homeScore === r.awayScore) { h.d++; h.pts++; a.d++; a.pts++; }
+    else { a.w++; a.pts += 3; h.l++; }
+  });
+  return ts.sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf);
+}
+function gRow(t, i) {
+  return `<tr class="${i < 2 ? 'qr' : i === 2 ? 'tr3' : 'er'}">
+    <td><div class="tc"><span>${t.flag}</span>${t.name}${i < 2 ? '<span style="margin-left:auto;font-size:9px;color:var(--green)">●</span>' : ''}</div></td>
+    <td class="sc">${t.p}</td><td class="sc">${t.w}</td><td class="sc">${t.d}</td><td class="sc">${t.l}</td>
+    <td class="sc">${t.gf}:${t.ga}</td><td class="pc">${t.pts}</td></tr>`;
+}
+function rGroups() {
+  const total = SCH.length;
+  const done = Object.keys(results).length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById('page-groups').innerHTML =
+    `<div class="stitle">Групповой Этап</div>
+     <div class="ssub">12 групп · Топ-2 + 8 лучших 3-х → 1/16 финала</div>
+     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:14px;">
+       <div style="flex:1"><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+         <div style="height:100%;background:var(--accent);border-radius:3px;width:${pct}%"></div></div></div>
+       <div style="font-size:12px;color:var(--muted)">${done}/${total} матчей</div>
+       <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--accent)">${pct}%</div>
+     </div>
+     <div class="ggrid">${Object.keys(GROUPS).map(g => {
+    const st = standings(g);
+    return `<div class="gc"><div class="gh"><span class="gl">Группа ${g}</span></div>
+       <table class="gt"><thead><tr><th>Команда</th><th class="c">И</th><th class="c">В</th><th class="c">Н</th><th class="c">П</th><th class="c">Г</th><th class="c">О</th></tr></thead>
+       <tbody>${st.map(gRow).join('')}</tbody></table></div>`;
+  }).join('')}</div>`;
+}
+
+// ── ADMIN: MATCHES ────────────────────────────────
+function rMatches() {
+  const dates = [...new Set(SCH.map(s => s.d))].sort();
+  if (!curDate || !dates.includes(curDate)) curDate = dates[0];
+  const done = Object.keys(results).length;
+  document.getElementById('page-matches').innerHTML =
+    `<div class="stitle">Матчи</div>
+     <div class="ssub">Вносите реальные результаты · ${done}/${SCH.length} сыграно</div>
+     <div class="tabs">${dates.map(d => `<div class="tab${d === curDate ? ' active' : ''}" onclick="setD('${d}')">${fmtD(d)}</div>`).join('')}</div>
+     <div id="mb" class="ml"></div>`;
+  rMBody();
+}
+function setD(d) { curDate = d; rMatches(); }
+function rMBody() {
+  const el = document.getElementById('mb'); if (!el) return;
+  const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curDate);
+  el.innerHTML = ms.map(m => {
+    const th = GROUPS[m.g].find(t => t.name === m.h), ta = GROUPS[m.g].find(t => t.name === m.a);
+    const r = results[m.id];
+    const ok = !!r;
+    return `<div class="mc" data-mid="${m.id}">
+      <div class="mm"><div class="mg">Гр. ${m.g}</div><span class="sb ${ok ? 'done' : 'up'}">${ok ? '✓ Сыгран' : 'Предстоит'}</span></div>
+      <div class="mts">
+        <div class="mt">${th ? th.flag : ''} ${m.h}</div>
+        <div class="sw">
+          <input class="si" type="number" min="0" max="30" value="${r ? r.homeScore : ''}" placeholder="–" oninput="setScore(${m.id},'home',this.value)">
+          <span class="sep">:</span>
+          <input class="si" type="number" min="0" max="30" value="${r ? r.awayScore : ''}" placeholder="–" oninput="setScore(${m.id},'away',this.value)">
+        </div>
+        <div class="mt r">${m.a} ${ta ? ta.flag : ''}</div>
+      </div></div>`;
+  }).join('') || '<div class="empty"><div class="ei">📅</div><p>Нет матчей в этот день</p></div>';
+}
+
+// Дебаунс — отправляем на сервер через 800мс после последнего нажатия
+const scoreTimers = {};
+function setScore(id, side, val) {
+  if (!results[id]) results[id] = { homeScore: null, awayScore: null };
+  const v = val === '' ? null : Math.max(0, parseInt(val) || 0);
+  results[id][side === 'home' ? 'homeScore' : 'awayScore'] = v;
+  // Обновляем бейдж сразу
+  const card = document.querySelector(`[data-mid="${id}"]`);
+  if (card) {
+    const r = results[id]; const ok = r.homeScore !== null && r.awayScore !== null;
+    const b = card.querySelector('.sb');
+    if (b) { b.className = 'sb ' + (ok ? 'done' : 'up'); b.textContent = ok ? '✓ Сыгран' : 'Предстоит'; }
+  }
+  // Сохраняем на сервер с задержкой
+  clearTimeout(scoreTimers[id]);
+  scoreTimers[id] = setTimeout(async () => {
+    const r = results[id];
+    if (r.homeScore !== null && r.awayScore !== null) {
+      try { await apiSaveResult(id, r.homeScore, r.awayScore); }
+      catch (e) { toast('Ошибка сохранения: ' + e.message, true); }
+    }
+  }, 800);
+}
+
+// ── PREDICT ──────────────────────────────────────
+function calcPts(predGroup) {
+  let pts = 0, exact = 0, result = 0, predicted = 0;
+  SCH.forEach((s, i) => {
+    const id = i + 1;
+    const p = predGroup[id];
+    const hp = p && p.h != null && p.a != null;
+    if (hp) predicted++;
+    const r = results[id];
+    if (!r) return;
+    if (!hp) return;
+    if (p.h === r.homeScore && p.a === r.awayScore) { pts += 3; exact++; }
+    else {
+      const mr = r.homeScore > r.awayScore ? 1 : r.homeScore < r.awayScore ? -1 : 0;
+      const pr = p.h > p.a ? 1 : p.h < p.a ? -1 : 0;
+      if (mr === pr) { pts += 1; result++; }
+    }
+  });
+  return { pts, exact, result, predicted };
+}
+
+function rPredict() {
+  if (!session) return;
+  const preds = myPreds.group || {};
+  const dates = [...new Set(SCH.map(s => s.d))].sort();
+  if (!curPredDate || !dates.includes(curPredDate)) curPredDate = dates[0];
+  const st = calcPts(preds);
+  const statsBar = `<div style="display:flex;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 16px;margin-bottom:14px;">
+    <span style="font-size:12px;color:var(--muted)">📝 <b style="color:var(--text)">${st.predicted}/${SCH.length}</b></span>
+    <span style="font-size:12px;color:var(--muted)">⭐ <b style="color:var(--accent)">${st.pts} оч.</b></span>
+    <span style="font-size:12px;color:var(--muted)">✓ точных: <b style="color:var(--green)">${st.exact}</b></span>
+    <span style="font-size:12px;color:var(--muted)">≈ исход: <b style="color:var(--accent)">${st.result}</b></span>
+  </div>`;
+  const subTabs = `<div class="stabs">
+    <div class="stab${curPredTab === 'group' ? ' active' : ''}" onclick="curPredTab='group';rPredict()">🏟 Групповой этап</div>
+    <div class="stab${curPredTab === 'playoff' ? ' active' : ''}" onclick="curPredTab='playoff';rPredict()">🏆 Плей-офф</div>
+  </div>`;
+  let body = curPredTab === 'group'
+    ? `<div class="tabs">${dates.map(d => `<div class="tab${d === curPredDate ? ' active' : ''}" onclick="setPD('${d}')">${fmtD(d)}</div>`).join('')}</div><div id="pb" class="ml"></div>`
+    : `<div id="pb-po"></div>`;
+  document.getElementById('page-predict').innerHTML =
+    `<div class="stitle">Прогнозы</div><div class="ssub">Введите счёт каждого матча — очки считаются автоматически</div>${statsBar}${subTabs}${body}`;
+  if (curPredTab === 'group') rPBody(); else rPBodyPO();
+}
+function setPD(d) { curPredDate = d; rPredict(); }
+
+function predHL(p, r) {
+  if (!r || !p || p.h == null || p.a == null) return { hl: '', lbl: '' };
+  if (p.h === r.homeScore && p.a === r.awayScore) return { hl: 'border-color:#27ae60;background:rgba(39,174,96,.06)', lbl: '<span class="bdg bex">+3 точно ✓</span>' };
+  const mr = r.homeScore > r.awayScore ? 1 : r.homeScore < r.awayScore ? -1 : 0;
+  const pr = p.h > p.a ? 1 : p.h < p.a ? -1 : 0;
+  if (mr === pr) return { hl: 'border-color:rgba(245,197,24,.5);background:rgba(245,197,24,.04)', lbl: '<span class="bdg brs">+1 исход</span>' };
+  return { hl: 'border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.04)', lbl: '<span style="font-size:10px;font-weight:700;color:#e74c3c">✗ промах</span>' };
+}
+
+function rPBody() {
+  const el = document.getElementById('pb'); if (!el) return;
+  const preds = myPreds.group || {};
+  const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
+  el.innerHTML = ms.map(m => {
+    const th = GROUPS[m.g].find(t => t.name === m.h), ta = GROUPS[m.g].find(t => t.name === m.a);
+    const p = preds[m.id] || {};
+    const r = results[m.id];
+    const { hl, lbl } = predHL(p, r);
+    const locked = !!r && !session.isAdmin;
+    const realInfo = r && session.isAdmin ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
+    const inputArea = locked
+      ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
+      : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePred(${m.id},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePred(${m.id},'a',this.value)"></div>`;
+    return `<div class="mc" style="${hl}">
+      <div class="mm"><div class="mg">Гр. ${m.g}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
+      <div style="flex:1"><div class="mts"><div class="mt">${th ? th.flag : ''} ${m.h}</div>${inputArea}<div class="mt r">${m.a} ${ta ? ta.flag : ''}</div></div>${realInfo}</div></div>`;
+  }).join('');
+}
+
+function rPBodyPO() {
+  const el = document.getElementById('pb-po'); if (!el) return;
+  const poPreds = myPreds.playoff || {};
+  let html = '';
+  POR.forEach(round => {
+    const slots = playoffState[round.id] || [];
+    const hasAny = slots.some(s => s && (s.home !== '' || s.away !== ''));
+    if (!hasAny) return;
+    html += `<div style="margin-bottom:20px"><div style="font-family:'Bebas Neue',cursive;font-size:16px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">${round.label}</div><div class="ml">`;
+    slots.forEach((m, idx) => {
+      if (!m || (m.home === '' && m.away === '')) return;
+      const key = `${round.id}_${idx}`;
+      const p = poPreds[key] || {};
+      const r = (m.homeScore != null && m.awayScore != null) ? { homeScore: m.homeScore, awayScore: m.awayScore } : null;
+      const { hl, lbl } = predHL(p, r);
+      const locked = !!r && !session.isAdmin;
+      const inputArea = locked
+        ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
+        : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePredPO('${round.id}',${idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePredPO('${round.id}',${idx},'a',this.value)"></div>`;
+      const hFlag = gFlag(m.home), aFlag = gFlag(m.away);
+      html += `<div class="mc" style="${hl}">
+        <div class="mm"><div class="mg">${round.label.split(' ')[0]}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
+        <div style="flex:1"><div class="mts"><div class="mt">${hFlag} ${m.home || '—'}</div>${inputArea}<div class="mt r">${m.away || '—'} ${aFlag}</div></div></div></div>`;
+    });
+    html += '</div></div>';
+  });
+  el.innerHTML = html || '<div class="empty"><div class="ei">⏳</div><p>Сетка плей-офф ещё не заполнена</p></div>';
+}
+
+// Дебаунс для прогнозов
+const predTimers = {};
+function savePred(matchId, side, val) {
+  if (!myPreds.group) myPreds.group = {};
+  if (!myPreds.group[matchId]) myPreds.group[matchId] = {};
+  myPreds.group[matchId][side] = val === '' ? null : Math.max(0, parseInt(val) || 0);
+  clearTimeout(predTimers['g' + matchId]);
+  predTimers['g' + matchId] = setTimeout(async () => {
+    const p = myPreds.group[matchId];
+    if (p.h != null && p.a != null) {
+      try { await apiSaveGroupPrediction(matchId, p.h, p.a); }
+      catch (e) { toast('Ошибка сохранения: ' + e.message, true); }
+    }
+  }, 800);
+}
+function savePredPO(roundId, idx, side, val) {
+  if (!myPreds.playoff) myPreds.playoff = {};
+  const key = `${roundId}_${idx}`;
+  if (!myPreds.playoff[key]) myPreds.playoff[key] = {};
+  myPreds.playoff[key][side] = val === '' ? null : Math.max(0, parseInt(val) || 0);
+  clearTimeout(predTimers['po' + key]);
+  predTimers['po' + key] = setTimeout(async () => {
+    const p = myPreds.playoff[key];
+    if (p.h != null && p.a != null) {
+      try { await apiSavePlayoffPrediction(roundId, idx, p.h, p.a); }
+      catch (e) { toast('Ошибка сохранения: ' + e.message, true); }
+    }
+  }, 800);
+}
+
+// ── PLAYOFF ──────────────────────────────────────
+function gFlag(n) { for (const a of Object.values(GROUPS)) { const t = a.find(t => t.name === n); if (t) return t.flag; } return ''; }
+function rPlayoff() {
+  document.getElementById('page-playoff').innerHTML =
+    `<div class="stitle">Плей-офф</div>
+     <div class="ssub">${session && session.isAdmin ? 'Нажмите на команду — победитель проходит дальше' : 'Турнирная сетка'}</div>
+     <div class="bwrap"><div class="bracket" id="bi"></div></div>`;
+  rBracket();
+}
+function rBracket() {
+  const el = document.getElementById('bi'); if (!el) return;
+  const isA = session && session.isAdmin;
+  el.innerHTML = '';
+  POR.forEach(round => {
+    const slots = playoffState[round.id] || Array.from({ length: round.slots }, () => ({ home: '', away: '', homeScore: null, awayScore: null, winner: null }));
+    const col = document.createElement('div'); col.className = 'bcol';
+    col.innerHTML = `<div class="bhead">${round.label}</div>`;
+    const body = document.createElement('div'); body.className = 'bbody';
+    slots.forEach((m, idx) => {
+      if (!m) m = { home: '', away: '', homeScore: null, awayScore: null, winner: null };
+      const hOk = m.home !== '', aOk = m.away !== '';
+      const hW = m.winner === m.home && hOk, aW = m.winner === m.away && aOk;
+      const bm = document.createElement('div'); bm.className = 'bm';
+      const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.homeScore != null ? m.homeScore : ''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (m.homeScore != null ? `<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.homeScore}</span>` : '');
+      const sA = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.awayScore != null ? m.awayScore : ''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'away',this.value)">` : (m.awayScore != null ? `<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.awayScore}</span>` : '');
+      bm.innerHTML = `
+        <div class="bt ${hW ? 'win' : aW && hOk ? 'lose' : !hOk ? 'tbd' : ''}${!isA ? ' ro' : ''}" ${isA ? `onclick="pickW('${round.id}',${idx},'home')"` : ''}>
+          <span class="bfl">${hOk ? (gFlag(m.home) || '🏳️') : ''}</span><span>${m.home || '—'}</span>${sH}
+        </div>
+        <div class="bt ${aW ? 'win' : hW && aOk ? 'lose' : !aOk ? 'tbd' : ''}${!isA ? ' ro' : ''}" ${isA ? `onclick="pickW('${round.id}',${idx},'away')"` : ''}>
+          <span class="bfl">${aOk ? (gFlag(m.away) || '🏳️') : ''}</span><span>${m.away || '—'}</span>${sA}
+        </div>`;
+      body.appendChild(bm);
+    });
+    col.appendChild(body); el.appendChild(col);
+  });
+}
+async function pickW(round, idx, side) {
+  if (!session || !session.isAdmin) return;
+  const slots = playoffState[round] || [];
+  const m = slots[idx] || {};
+  const team = side === 'home' ? m.home : m.away; if (!team) return;
+  m.winner = m.winner === team ? null : team;
+  if (!playoffState[round]) playoffState[round] = [];
+  playoffState[round][idx] = m;
+  // Advance winner to next round locally
+  advW(round, idx, m.winner);
+  rBracket();
+  try { await apiSavePlayoffSlot(round, idx, m.home, m.away, m.homeScore, m.awayScore, m.winner); }
+  catch (e) { toast('Ошибка сохранения: ' + e.message, true); }
+}
+function advW(round, idx, winner) {
+  const order = POR.map(r => r.id), ri = order.indexOf(round);
+  if (ri < 0 || ri >= order.length - 1) return;
+  const nr = order[ri + 1], ni = Math.floor(idx / 2), ns = idx % 2 === 0 ? 'home' : 'away';
+  if (!playoffState[nr]) playoffState[nr] = [];
+  if (!playoffState[nr][ni]) playoffState[nr][ni] = { home: '', away: '', homeScore: null, awayScore: null, winner: null };
+  playoffState[nr][ni][ns] = winner || '';
+  if (!winner) { playoffState[nr][ni].winner = null; }
+}
+const poTimers = {};
+async function setPOSc(round, idx, side, val) {
+  if (!session || !session.isAdmin) return;
+  if (!playoffState[round]) playoffState[round] = [];
+  if (!playoffState[round][idx]) playoffState[round][idx] = { home: '', away: '', homeScore: null, awayScore: null, winner: null };
+  const m = playoffState[round][idx];
+  m[side === 'home' ? 'homeScore' : 'awayScore'] = val === '' ? null : Math.max(0, parseInt(val) || 0);
+  const key = round + '_' + idx;
+  clearTimeout(poTimers[key]);
+  poTimers[key] = setTimeout(async () => {
+    try { await apiSavePlayoffSlot(round, idx, m.home, m.away, m.homeScore, m.awayScore, m.winner); }
+    catch (e) { toast('Ошибка: ' + e.message, true); }
+  }, 800);
+}
+
+// ── LEADERBOARD ───────────────────────────────────
+function rLB() {
+  const el = document.getElementById('page-leaderboard');
+  // Для каждого пользователя считаем очки
+  const scored = Object.entries(allPreds).map(([uid, data]) => {
+    const s = calcPts(data.group || {});
+    return { uid, name: data.name, color: data.color, ...s };
+  }).sort((a, b) => b.pts - a.pts || b.exact - a.exact);
+  // Если игрок — добавляем себя если нет в allPreds (пустой прогноз)
+  const done = Object.keys(results).length;
+  el.innerHTML = `<div class="stitle">Таблица Лидеров</div>
+    <div class="ssub">Сыграно: <b>${done}</b> из <b>${SCH.length}</b> матчей</div>
+    <div class="scorebox">
+      <div class="si2"><div class="spts">3</div><div class="sdsc">Точный счёт</div></div>
+      <div class="si2"><div class="spts">1</div><div class="sdsc">Правильный исход</div></div>
+      <div class="si2"><div class="spts">0</div><div class="sdsc">Промах</div></div>
+    </div>
+    ${scored.length === 0
+      ? '<div class="empty"><div class="ei">🏆</div><p>Пока нет прогнозов</p></div>'
+      : scored.map((u, i) => {
+        const isMe = session && u.uid == session.id;
+        return `<div class="lr${isMe ? ' me' : ''}">
+          <div class="lrk ${i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : ''}">${i + 1}</div>
+          <div style="width:34px;height:34px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000;flex-shrink:0">${u.name[0]}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:800;font-size:14px">${u.name}${isMe ? ' <span style="font-size:10px;color:var(--accent)">(вы)</span>' : ''}</div>
+            <div class="ldet"><span class="bdg bex">✓ ${u.exact}</span><span class="bdg brs">≈ ${u.result}</span><span style="font-size:10px;color:var(--muted)">📝 ${u.predicted}/${SCH.length}</span></div>
+          </div>
+          <div class="lpts">${u.pts}<span style="font-size:13px;color:var(--muted);font-family:'Manrope',sans-serif;font-weight:400"> оч.</span></div>
+        </div>`;
+      }).join('')}`;
+}
+
+// ── SETTINGS ─────────────────────────────────────
+function rSettings() {
+  if (!session || !session.isAdmin) { goP('predict'); return; }
+  document.getElementById('page-settings').innerHTML =
+    `<div class="stitle">Участники</div>
+     <div class="ssub">Все зарегистрированные игроки · ${users.length} чел.</div>
+     <div class="sgrid">
+       <div class="scard" style="grid-column:1/-1"><h3>Игроки</h3>
+         ${users.length === 0 ? '<p style="color:var(--muted);font-size:13px">Пока никого нет</p>' : ''}
+         ${users.map(u => `<div class="urow">
+           <div class="uav" style="background:${u.color}">${u.name[0]}</div>
+           <div style="flex:1;min-width:0">
+             <div style="font-weight:700;font-size:13px">${u.name}</div>
+             <div style="font-size:11px;color:var(--muted);margin-top:2px">📧 ${u.email}</div>
+           </div>
+           <div style="display:flex;gap:6px;flex-shrink:0">
+             <button class="btn bd bxs" onclick="rmUser(${u.id})">✕</button>
+           </div></div>`).join('')}
+       </div>
+       <div class="scard"><h3>Данные</h3>
+         <div class="dbtns">
+           <button class="btn bs bsm" onclick="reloadData()">🔄 Обновить данные</button>
+         </div>
+       </div>
+     </div>`;
+}
+async function rmUser(id) {
+  if (!confirm('Удалить игрока?')) return;
+  try {
+    await apiDeleteUser(id);
+    users = users.filter(u => u.id !== id);
+    delete allPreds[id];
+    rSettings();
+    toast('Игрок удалён');
+  } catch (e) { toast('Ошибка: ' + e.message, true); }
+}
+async function reloadData() {
+  await loadAllData();
+  rp(curPage);
+  toast('✓ Данные обновлены');
+}
+
+// ── INIT ─────────────────────────────────────────
+document.querySelector('header').style.display = 'none';
+document.querySelector('main').style.display = 'none';
+
+// Если уже авторизован — сразу открываем приложение
+if (session && getToken()) {
+  startApp();
+}
+</script>
+</body>
+</html>

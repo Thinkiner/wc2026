@@ -1,0 +1,13 @@
+{
+  "name": "wc2026",
+  "version": "1.0.0",
+  "description": "ЧМ 2026 — Турнир прогнозов",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "cd backend && nodemon server.js",
+    "install-backend": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
