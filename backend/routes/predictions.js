@@ -15,6 +15,12 @@ router.get('/my', requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
 
+    // Админ не является игроком — у него нет строки в таблице users
+    // Возвращаем пустые прогнозы чтобы не было ошибки
+    if (req.user.isAdmin) {
+      return res.json({ group: {}, playoff: {} });
+    }
+
     // Групповые прогнозы
     const groupRes = await db.query(
       'SELECT match_id, home_score, away_score FROM predictions WHERE user_id = $1',
