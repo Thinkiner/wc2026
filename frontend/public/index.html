@@ -248,80 +248,85 @@ const GROUPS={
 // Group B тур 1: Катар vs Швейцария 13 июня (не 12го!)
 // Группа E тур 3: Эквадор vs Кот-д'Ивуар 25 июня (исправлено)
 // Группа J тур 3: Алжир vs Австрия (не Иордания vs Алжир) 26 июня — оба верны
-// t = время начала МСК (UTC+3), tn = примечание если переходит через полночь
+// t = время начала по МСК (UTC+3). Источник: FIFA / Fox Sports (ET + 7h)
+// tn = дата следующего дня МСК если матч переходит через полночь
 const SCH=[
-  // Тур 1
-  {d:'2026-06-11',h:'Мексика',a:'ЮАР',g:'A',t:'03:00',tn:'12.06'},
+  // ── Тур 1 ──
+  {d:'2026-06-11',h:'Мексика',a:'ЮАР',g:'A',t:'22:00'},
   {d:'2026-06-11',h:'Южная Корея',a:'Чехия',g:'A',t:'05:00',tn:'12.06'},
-  {d:'2026-06-12',h:'США',a:'Парагвай',g:'D',t:'03:00',tn:'13.06'},
-  {d:'2026-06-12',h:'Канада',a:'Босния',g:'B',t:'23:00'},
-  {d:'2026-06-13',h:'Катар',a:'Швейцария',g:'B',t:'02:00',tn:'14.06'},
-  {d:'2026-06-13',h:'Бразилия',a:'Марокко',g:'C',t:'05:00',tn:'14.06'},
-  {d:'2026-06-13',h:'Гаити',a:'Шотландия',g:'C',t:'23:00'},
-  {d:'2026-06-13',h:'Австралия',a:'Турция',g:'D',t:'02:00',tn:'14.06'},
-  {d:'2026-06-14',h:'Германия',a:'Кюрасао',g:'E',t:'02:00',tn:'15.06'},
-  {d:'2026-06-14',h:'Швеция',a:'Тунис',g:'F',t:'23:00'},
-  {d:'2026-06-14',h:'Нидерланды',a:'Япония',g:'F',t:'05:00',tn:'15.06'},
-  {d:'2026-06-15',h:'Испания',a:'Кабо-Верде',g:'H',t:'02:00',tn:'16.06'},
-  {d:'2026-06-15',h:'Иран',a:'Новая Зеландия',g:'G',t:'23:00'},
-  {d:'2026-06-15',h:'Саудовская Аравия',a:'Уругвай',g:'H',t:'05:00',tn:'16.06'},
-  {d:'2026-06-16',h:'Франция',a:'Сенегал',g:'I',t:'02:00',tn:'17.06'},
-  {d:'2026-06-16',h:'Ирак',a:'Норвегия',g:'I',t:'23:00'},
-  {d:'2026-06-16',h:'Аргентина',a:'Алжир',g:'J',t:'05:00',tn:'17.06'},
-  {d:'2026-06-17',h:'Англия',a:'Хорватия',g:'L',t:'02:00',tn:'18.06'},
-  {d:'2026-06-17',h:'Португалия',a:'ДР Конго',g:'K',t:'23:00'},
-  {d:'2026-06-17',h:'Бельгия',a:'Египет',g:'G',t:'05:00',tn:'18.06'},
-  // Тур 2
-  {d:'2026-06-18',h:'Чехия',a:'ЮАР',g:'A',t:'02:00',tn:'19.06'},
-  {d:'2026-06-18',h:'Мексика',a:'Южная Корея',g:'A',t:'05:00',tn:'19.06'},
-  {d:'2026-06-18',h:'Швейцария',a:'Босния',g:'B',t:'23:00'},
-  {d:'2026-06-18',h:'Канада',a:'Катар',g:'B',t:'02:00',tn:'19.06'},
-  {d:'2026-06-19',h:'США',a:'Австралия',g:'D',t:'02:00',tn:'20.06'},
-  {d:'2026-06-19',h:'Шотландия',a:'Марокко',g:'C',t:'23:00'},
-  {d:'2026-06-19',h:'Бразилия',a:'Гаити',g:'C',t:'05:00',tn:'20.06'},
-  {d:'2026-06-19',h:'Турция',a:'Парагвай',g:'D',t:'23:00'},
-  {d:'2026-06-20',h:'Эквадор',a:'Кюрасао',g:'E',t:'23:00'},
-  {d:'2026-06-20',h:'Тунис',a:'Япония',g:'F',t:'02:00',tn:'21.06'},
-  {d:'2026-06-20',h:'Нидерланды',a:'Швеция',g:'F',t:'05:00',tn:'21.06'},
-  {d:'2026-06-20',h:'Австрия',a:'Иордания',g:'J',t:'23:00'},
-  {d:'2026-06-21',h:'Испания',a:'Саудовская Аравия',g:'H',t:'02:00',tn:'22.06'},
-  {d:'2026-06-21',h:'Бельгия',a:'Иран',g:'G',t:'23:00'},
-  {d:'2026-06-21',h:'Уругвай',a:'Кабо-Верде',g:'H',t:'05:00',tn:'22.06'},
-  {d:'2026-06-21',h:'Аргентина',a:'Австрия',g:'J',t:'02:00',tn:'22.06'},
-  {d:'2026-06-22',h:'Норвегия',a:'Сенегал',g:'I',t:'02:00',tn:'23.06'},
-  {d:'2026-06-22',h:'Франция',a:'Ирак',g:'I',t:'05:00',tn:'23.06'},
-  {d:'2026-06-22',h:'Гана',a:'Панама',g:'L',t:'23:00'},
-  {d:'2026-06-22',h:'Колумбия',a:'ДР Конго',g:'K',t:'02:00',tn:'23.06'},
-  {d:'2026-06-23',h:"Кот-д'Ивуар",a:'Эквадор',g:'E',t:'23:00'},
-  {d:'2026-06-23',h:"Германия",a:"Кот-д'Ивуар",g:'E',t:'02:00',tn:'24.06'},
-  {d:'2026-06-23',h:'Португалия',a:'Узбекистан',g:'K',t:'05:00',tn:'24.06'},
-  {d:'2026-06-23',h:'Колумбия',a:'ДР Конго',g:'K',t:'23:00'},
-  // Тур 3 (одновременные матчи)
-  {d:'2026-06-24',h:'Чехия',a:'Мексика',g:'A',t:'02:00',tn:'25.06'},
-  {d:'2026-06-24',h:'ЮАР',a:'Южная Корея',g:'A',t:'02:00',tn:'25.06'},
-  {d:'2026-06-24',h:'Швейцария',a:'Канада',g:'B',t:'05:00',tn:'25.06'},
-  {d:'2026-06-24',h:'Босния',a:'Катар',g:'B',t:'05:00',tn:'25.06'},
-  {d:'2026-06-24',h:'Шотландия',a:'Бразилия',g:'C',t:'23:00'},
-  {d:'2026-06-24',h:'Марокко',a:'Гаити',g:'C',t:'23:00'},
-  {d:'2026-06-25',h:'Турция',a:'США',g:'D',t:'02:00',tn:'26.06'},
-  {d:'2026-06-25',h:'Парагвай',a:'Австралия',g:'D',t:'02:00',tn:'26.06'},
-  {d:'2026-06-25',h:'Кюрасао',a:'Германия',g:'E',t:'05:00',tn:'26.06'},
-  {d:'2026-06-25',h:"Эквадор",a:"Кот-д'Ивуар",g:'E',t:'05:00',tn:'26.06'},
-  {d:'2026-06-25',h:'Япония',a:'Швеция',g:'F',t:'23:00'},
-  {d:'2026-06-25',h:'Тунис',a:'Нидерланды',g:'F',t:'23:00'},
-  {d:'2026-06-26',h:'Египет',a:'Новая Зеландия',g:'G',t:'02:00',tn:'27.06'},
-  {d:'2026-06-26',h:'Иран',a:'Бельгия',g:'G',t:'02:00',tn:'27.06'},
-  {d:'2026-06-26',h:'Уругвай',a:'Испания',g:'H',t:'05:00',tn:'27.06'},
-  {d:'2026-06-26',h:'Кабо-Верде',a:'Саудовская Аравия',g:'H',t:'05:00',tn:'27.06'},
-  {d:'2026-06-26',h:'Иордания',a:'Алжир',g:'J',t:'23:00'},
-  {d:'2026-06-26',h:'Австрия',a:'Аргентина',g:'J',t:'23:00'},
-  {d:'2026-06-27',h:'Норвегия',a:'Ирак',g:'I',t:'02:00',tn:'28.06'},
-  {d:'2026-06-27',h:'Сенегал',a:'Франция',g:'I',t:'02:00',tn:'28.06'},
-  {d:'2026-06-27',h:'ДР Конго',a:'Узбекистан',g:'K',t:'05:00',tn:'28.06'},
-  {d:'2026-06-27',h:'Колумбия',a:'Португалия',g:'K',t:'05:00',tn:'28.06'},
-  {d:'2026-06-28',h:'Хорватия',a:'Гана',g:'L',t:'02:00',tn:'29.06'},
-  {d:'2026-06-28',h:'Панама',a:'Англия',g:'L',t:'05:00',tn:'29.06'},
-];
+  {d:'2026-06-12',h:'Канада',a:'Босния',g:'B',t:'22:00'},
+  {d:'2026-06-12',h:'США',a:'Парагвай',g:'D',t:'04:00',tn:'13.06'},
+  {d:'2026-06-13',h:'Катар',a:'Швейцария',g:'B',t:'22:00'},
+  {d:'2026-06-13',h:'Бразилия',a:'Марокко',g:'C',t:'01:00',tn:'14.06'},
+  {d:'2026-06-13',h:'Гаити',a:'Шотландия',g:'C',t:'04:00',tn:'14.06'},
+  {d:'2026-06-13',h:'Австралия',a:'Турция',g:'D',t:'07:00',tn:'14.06'},
+  {d:'2026-06-14',h:'Германия',a:'Кюрасао',g:'E',t:'20:00'},
+  {d:'2026-06-14',h:'Нидерланды',a:'Япония',g:'F',t:'23:00'},
+  {d:'2026-06-14',h:"Кот-д'Ивуар",a:'Эквадор',g:'E',t:'02:00',tn:'15.06'},
+  {d:'2026-06-14',h:'Тунис',a:'Швеция',g:'F',t:'05:00',tn:'15.06'},
+  {d:'2026-06-15',h:'Испания',a:'Кабо-Верде',g:'H',t:'19:00'},
+  {d:'2026-06-15',h:'Бельгия',a:'Египет',g:'G',t:'22:00'},
+  {d:'2026-06-15',h:'Саудовская Аравия',a:'Уругвай',g:'H',t:'01:00',tn:'16.06'},
+  {d:'2026-06-15',h:'Иран',a:'Новая Зеландия',g:'G',t:'04:00',tn:'16.06'},
+  {d:'2026-06-16',h:'Франция',a:'Сенегал',g:'I',t:'19:00'},
+  {d:'2026-06-16',h:'Ирак',a:'Норвегия',g:'I',t:'22:00'},
+  {d:'2026-06-16',h:'Аргентина',a:'Алжир',g:'J',t:'01:00',tn:'17.06'},
+  {d:'2026-06-16',h:'Англия',a:'Хорватия',g:'L',t:'04:00',tn:'17.06'},
+  {d:'2026-06-17',h:'Португалия',a:'ДР Конго',g:'K',t:'22:00'},
+  {d:'2026-06-17',h:'Австрия',a:'Иордания',g:'J',t:'01:00',tn:'18.06'},
+  {d:'2026-06-17',h:'Гана',a:'Панама',g:'L',t:'04:00',tn:'18.06'},
+  {d:'2026-06-17',h:'Колумбия',a:'Узбекистан',g:'K',t:'07:00',tn:'18.06'},
+  // ── Тур 2 ──
+  {d:'2026-06-18',h:'Чехия',a:'ЮАР',g:'A',t:'19:00'},
+  {d:'2026-06-18',h:'Швейцария',a:'Босния',g:'B',t:'22:00'},
+  {d:'2026-06-18',h:'Канада',a:'Катар',g:'B',t:'01:00',tn:'19.06'},
+  {d:'2026-06-18',h:'Мексика',a:'Южная Корея',g:'A',t:'04:00',tn:'19.06'},
+  {d:'2026-06-19',h:'Шотландия',a:'Марокко',g:'C',t:'19:00'},
+  {d:'2026-06-19',h:'Австралия',a:'Турция',g:'D',t:'22:00'},
+  {d:'2026-06-19',h:'Бразилия',a:'Гаити',g:'C',t:'01:00',tn:'20.06'},
+  {d:'2026-06-19',h:'США',a:'Австралия',g:'D',t:'04:00',tn:'20.06'},
+  {d:'2026-06-20',h:'Эквадор',a:'Кюрасао',g:'E',t:'19:00'},
+  {d:'2026-06-20',h:'Тунис',a:'Япония',g:'F',t:'22:00'},
+  {d:'2026-06-20',h:'Нидерланды',a:'Швеция',g:'F',t:'01:00',tn:'21.06'},
+  {d:'2026-06-20',h:'Австрия',a:'Иордания',g:'J',t:'04:00',tn:'21.06'},
+  {d:'2026-06-21',h:'Испания',a:'Саудовская Аравия',g:'H',t:'19:00'},
+  {d:'2026-06-21',h:'Бельгия',a:'Иран',g:'G',t:'22:00'},
+  {d:'2026-06-21',h:'Уругвай',a:'Кабо-Верде',g:'H',t:'01:00',tn:'22.06'},
+  {d:'2026-06-21',h:'Аргентина',a:'Австрия',g:'J',t:'04:00',tn:'22.06'},
+  {d:'2026-06-22',h:'Франция',a:'Ирак',g:'I',t:'19:00'},
+  {d:'2026-06-22',h:'Гана',a:'Панама',g:'L',t:'22:00'},
+  {d:'2026-06-22',h:'Норвегия',a:'Сенегал',g:'I',t:'01:00',tn:'23.06'},
+  {d:'2026-06-22',h:'Колумбия',a:'ДР Конго',g:'K',t:'04:00',tn:'23.06'},
+  {d:'2026-06-23',h:'Германия',a:"Кот-д'Ивуар",g:'E',t:'19:00'},
+  {d:'2026-06-23',h:'Португалия',a:'Узбекистан',g:'K',t:'22:00'},
+  {d:'2026-06-23',h:'Хорватия',a:'Иордания',g:'L',t:'01:00',tn:'24.06'},
+  {d:'2026-06-23',h:'Алжир',a:'Австрия',g:'J',t:'04:00',tn:'24.06'},
+  // ── Тур 3 (одновременные матчи) ──
+  {d:'2026-06-24',h:'Чехия',a:'Мексика',g:'A',t:'04:00',tn:'25.06'},
+  {d:'2026-06-24',h:'ЮАР',a:'Южная Корея',g:'A',t:'04:00',tn:'25.06'},
+  {d:'2026-06-24',h:'Швейцария',a:'Канада',g:'B',t:'22:00'},
+  {d:'2026-06-24',h:'Босния',a:'Катар',g:'B',t:'22:00'},
+  {d:'2026-06-24',h:'Шотландия',a:'Бразилия',g:'C',t:'01:00',tn:'25.06'},
+  {d:'2026-06-24',h:'Марокко',a:'Гаити',g:'C',t:'01:00',tn:'25.06'},
+  {d:'2026-06-25',h:'Турция',a:'США',g:'D',t:'04:00',tn:'26.06'},
+  {d:'2026-06-25',h:'Парагвай',a:'Австралия',g:'D',t:'04:00',tn:'26.06'},
+  {d:'2026-06-25',h:'Кюрасао',a:'Германия',g:'E',t:'22:00'},
+  {d:'2026-06-25',h:'Эквадор',a:"Кот-д'Ивуар",g:'E',t:'22:00'},
+  {d:'2026-06-25',h:'Япония',a:'Швеция',g:'F',t:'01:00',tn:'26.06'},
+  {d:'2026-06-25',h:'Тунис',a:'Нидерланды',g:'F',t:'01:00',tn:'26.06'},
+  {d:'2026-06-26',h:'Египет',a:'Новая Зеландия',g:'G',t:'22:00'},
+  {d:'2026-06-26',h:'Иран',a:'Бельгия',g:'G',t:'22:00'},
+  {d:'2026-06-26',h:'Уругвай',a:'Испания',g:'H',t:'01:00',tn:'27.06'},
+  {d:'2026-06-26',h:'Кабо-Верде',a:'Саудовская Аравия',g:'H',t:'01:00',tn:'27.06'},
+  {d:'2026-06-26',h:'Иордания',a:'Алжир',g:'J',t:'04:00',tn:'27.06'},
+  {d:'2026-06-26',h:'Австрия',a:'Аргентина',g:'J',t:'04:00',tn:'27.06'},
+  {d:'2026-06-27',h:'Норвегия',a:'Ирак',g:'I',t:'22:00'},
+  {d:'2026-06-27',h:'Сенегал',a:'Франция',g:'I',t:'22:00'},
+  {d:'2026-06-27',h:'ДР Конго',a:'Узбекистан',g:'K',t:'01:00',tn:'28.06'},
+  {d:'2026-06-27',h:'Колумбия',a:'Португалия',g:'K',t:'01:00',tn:'28.06'},
+  {d:'2026-06-28',h:'Хорватия',a:'Гана',g:'L',t:'04:00',tn:'29.06'},
+  {d:'2026-06-28',h:'Панама',a:'Англия',g:'L',t:'04:00',tn:'29.06'},
+]
 
 function buildMatches(){return SCH.map((s,i)=>({id:i+1,group:s.g,home:s.h,away:s.a,date:s.d,homeScore:null,awayScore:null}));}
 
@@ -345,7 +350,7 @@ let allPreds = {};           // только для админа
 let playoffState = {};       // состояние сетки плей-офф
 let users = [];              // список игроков (только для админа)
 
-let curPage = '', curDate = null, curPredDate = null, curPredTab = 'group';
+let curPage = '', curDate = null, curPredDate = null, curPredTab = 'group', curViewUserId = '';
 
 // ── TOAST ─────────────────────────────────────────
 let tt;
@@ -430,11 +435,12 @@ async function loadAllData() {
     results = res;
     myPreds = preds;
     playoffState = po;
-    // Только админ грузит всех игроков и их прогнозы
+    // Все грузят allPreds для таблицы лидеров
+    // Админ дополнительно грузит список пользователей
+    const ap = await apiGetAllPredictions();
+    allPreds = ap;
     if (session.isAdmin) {
-      const [u, ap] = await Promise.all([apiGetUsers(), apiGetAllPredictions()]);
-      users = u;
-      allPreds = ap;
+      users = await apiGetUsers();
     }
   } catch (e) {
     toast('Ошибка загрузки данных: ' + e.message, true);
@@ -459,14 +465,14 @@ function getPages() {
     { id: 'predict', label: 'Прогнозы', icon: '✏️' },
     { id: 'matches', label: 'Матчи', icon: '📅' },
     { id: 'playoff', label: 'Плей-офф', icon: '🏆' },
-    { id: 'leaderboard', label: 'Таблица', icon: '📊' },
+    { id: 'leaderboard', label: 'Лидеры', icon: '📊' },
     { id: 'settings', label: 'Участники', icon: '⚙️' },
   ];
   return [
     { id: 'predict', label: 'Прогнозы', icon: '✏️' },
     { id: 'groups', label: 'Группы', icon: '🏟' },
     { id: 'playoff', label: 'Плей-офф', icon: '🏆' },
-    { id: 'leaderboard', label: 'Таблица', icon: '📊' },
+    { id: 'leaderboard', label: 'Лидеры', icon: '📊' },
   ];
 }
 function buildNav() {
@@ -654,6 +660,8 @@ function calcPts(predGroup) {
 
 function rPredict() {
   if (!session) return;
+  if (session.isAdmin) { rPredictAdmin(); return; }
+  // ── PLAYER VIEW ──
   const preds = myPreds.group || {};
   const dates = [...new Set(SCH.map(s => s.d))].sort();
   if (!curPredDate || !dates.includes(curPredDate)) curPredDate = dates[0];
@@ -675,6 +683,111 @@ function rPredict() {
   document.getElementById('page-predict').innerHTML =
     `<div class="stitle">Прогнозы</div><div class="ssub">Введите счёт каждого матча — очки считаются автоматически</div>${statsBar}${subTabs}${body}`;
   if (curPredTab === 'group') rPBody(); else rPBodyPO();
+}
+
+function rPredictAdmin() {
+  // ── ADMIN VIEW — выпадающий список игроков, только просмотр ──
+  const dates = [...new Set(SCH.map(s => s.d))].sort();
+  if (!curPredDate || !dates.includes(curPredDate)) curPredDate = dates[0];
+
+  // Список игроков из allPreds
+  const playerList = Object.entries(allPreds).map(([uid, data]) => ({ uid, name: data.name, color: data.color }));
+
+  // Если выбранный игрок удалён — сбрасываем
+  if (curViewUserId && !allPreds[curViewUserId]) curViewUserId = '';
+
+  const selector = playerList.length === 0
+    ? `<div style="color:var(--muted);font-size:13px;padding:12px 0">Пока нет зарегистрированных игроков</div>`
+    : `<div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px">Игрок</div>
+          <select onchange="curViewUserId=this.value;rPredictAdmin()" style="padding:9px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:'Manrope',sans-serif;font-size:13px;outline:none;min-width:200px;cursor:pointer;">
+            <option value="">— выберите игрока —</option>
+            ${playerList.map(p => `<option value="${p.uid}" ${p.uid===curViewUserId?'selected':''}>${p.name}</option>`).join('')}
+          </select>
+        </div>
+        ${curViewUserId ? (() => {
+          const st = calcPts((allPreds[curViewUserId]||{}).group||{});
+          return `<div style="display:flex;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-size:12px;">
+            <span style="color:var(--muted)">⭐ <b style="color:var(--accent)">${st.pts} оч.</b></span>
+            <span style="color:var(--muted)">✓ точных: <b style="color:var(--green)">${st.exact}</b></span>
+            <span style="color:var(--muted)">📝 ${st.predicted}/${SCH.length}</span>
+          </div>`;
+        })() : ''}
+      </div>`;
+
+  const subTabs = `<div class="stabs">
+    <div class="stab${curPredTab === 'group' ? ' active' : ''}" onclick="curPredTab='group';rPredictAdmin()">🏟 Групповой этап</div>
+    <div class="stab${curPredTab === 'playoff' ? ' active' : ''}" onclick="curPredTab='playoff';rPredictAdmin()">🏆 Плей-офф</div>
+  </div>`;
+
+  let body = '';
+  if (!curViewUserId) {
+    body = '<div class="empty"><div class="ei">👆</div><p>Выберите игрока для просмотра прогнозов</p></div>';
+  } else if (curPredTab === 'group') {
+    body = `<div class="tabs">${dates.map(d => `<div class="tab${d === curPredDate ? ' active' : ''}" onclick="curPredDate='${d}';rPredictAdmin()">${fmtD(d)}</div>`).join('')}</div><div id="pb" class="ml"></div>`;
+  } else {
+    body = `<div id="pb-po"></div>`;
+  }
+
+  document.getElementById('page-predict').innerHTML =
+    `<div class="stitle">Прогнозы</div><div class="ssub">Просмотр прогнозов игроков — только чтение</div>${selector}${curViewUserId ? subTabs : ''}${body}`;
+
+  if (curViewUserId) {
+    if (curPredTab === 'group') rPBodyAdminView(); else rPBodyPOAdminView();
+  }
+}
+
+function rPBodyAdminView() {
+  const el = document.getElementById('pb'); if (!el) return;
+  const viewPreds = (allPreds[curViewUserId] && allPreds[curViewUserId].group) || {};
+  const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
+  el.innerHTML = ms.map(m => {
+    const th = GROUPS[m.g].find(t => t.name === m.h), ta = GROUPS[m.g].find(t => t.name === m.a);
+    const p = viewPreds[m.id];
+    const r = results[m.id];
+    const hasP = p && p.h != null && p.a != null;
+    const { hl, lbl } = predHL(hasP ? p : null, r);
+    const timeLabel = m.tn ? `${m.t}<br><span style="font-size:9px;color:var(--muted)">${m.tn} МСК</span>` : `${m.t} МСК`;
+    const predDisp = hasP
+      ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
+      : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
+    const realInfo = r
+      ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>`
+      : '';
+    return `<div class="mc" style="${hl}">
+      <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
+      <div style="flex:1"><div class="mts"><div class="mt">${th ? th.flag : ''} ${m.h}</div>${predDisp}<div class="mt r">${m.a} ${ta ? ta.flag : ''}</div></div>${realInfo}</div></div>`;
+  }).join('');
+}
+
+function rPBodyPOAdminView() {
+  const el = document.getElementById('pb-po'); if (!el) return;
+  const poPreds = (allPreds[curViewUserId] && allPreds[curViewUserId].playoff) || {};
+  let html = '';
+  POR.forEach(round => {
+    const slots = playoffState[round.id] || [];
+    const hasAny = slots.some(s => s && (s.home !== '' || s.away !== ''));
+    if (!hasAny) return;
+    html += `<div style="margin-bottom:20px"><div style="font-family:'Bebas Neue',cursive;font-size:16px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">${round.label}</div><div class="ml">`;
+    slots.forEach((m, idx) => {
+      if (!m || (m.home === '' && m.away === '')) return;
+      const key = `\${round.id}_\${idx}`;
+      const p = poPreds[key];
+      const hasP = p && p.h != null && p.a != null;
+      const r = (m.homeScore != null && m.awayScore != null) ? { homeScore: m.homeScore, awayScore: m.awayScore } : null;
+      const { hl, lbl } = predHL(hasP ? p : null, r);
+      const hFlag = gFlag(m.home), aFlag = gFlag(m.away);
+      const predDisp = hasP
+        ? `<div class="sdisp"><div class="sbox has">\${p.h}</div><span class="sep">:</span><div class="sbox has">\${p.a}</div></div>`
+        : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
+      html += `<div class="mc" style="\${hl}">
+        <div class="mm"><div class="mg">\${round.label.split(' ')[0]}</div><span class="sb \${r ? 'done' : 'up'}">\${r ? 'Сыгран' : 'Предстоит'}</span>\${lbl}</div>
+        <div style="flex:1"><div class="mts"><div class="mt">\${hFlag} \${m.home || '—'}</div>\${predDisp}<div class="mt r">\${m.away || '—'} \${aFlag}</div></div></div></div>`;
+    });
+    html += '</div></div>';
+  });
+  el.innerHTML = html || '<div class="empty"><div class="ei">⏳</div><p>Сетка плей-офф ещё не заполнена</p></div>';
 }
 function setPD(d) { curPredDate = d; rPredict(); }
 
@@ -859,7 +972,7 @@ function rLB() {
   }).sort((a, b) => b.pts - a.pts || b.exact - a.exact);
   // Если игрок — добавляем себя если нет в allPreds (пустой прогноз)
   const done = Object.keys(results).length;
-  el.innerHTML = `<div class="stitle">Таблица Лидеров</div>
+  el.innerHTML = `<div class="stitle">Рейтинг игроков</div>
     <div class="ssub">Сыграно: <b>${done}</b> из <b>${SCH.length}</b> матчей</div>
     <div style="background:var(--card);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin-bottom:18px;line-height:1.9;font-size:13px;">
       <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:10px">📋 Правила конкурса</div>
