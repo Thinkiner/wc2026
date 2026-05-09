@@ -104,8 +104,9 @@ router.post('/playoff', requireAuth, async (req, res) => {
   }
 });
 
-// ── Все прогнозы всех игроков (только админ) ─────
-router.get('/all', requireAdmin, async (req, res) => {
+// ── Все прогнозы всех игроков (все авторизованные) ─
+// Нужно игрокам для таблицы лидеров, и админу для просмотра прогнозов
+router.get('/all', requireAuth, async (req, res) => {
   try {
     // Присоединяем имя пользователя
     const groupRes = await db.query(
