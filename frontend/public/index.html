@@ -590,24 +590,47 @@ function rMatches() {
 function setD(d) { curDate = d; rMatches(); }
 function rMBody() {
   const el = document.getElementById('mb'); if (!el) return;
+  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const PO_LBL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curDate);
+  if (!ms.length) { el.innerHTML = '<div class="empty"><div class="ei">📅</div><p>Нет матчей в этот день</p></div>'; return; }
   el.innerHTML = ms.map(m => {
-    const th = GROUPS[m.g].find(t => t.name === m.h), ta = GROUPS[m.g].find(t => t.name === m.a);
+    const isGrp = GRP.includes(m.g);
+    const th = isGrp ? GROUPS[m.g].find(t => t.name === m.h) : null;
+    const ta = isGrp ? GROUPS[m.g].find(t => t.name === m.a) : null;
     const r = results[m.id];
     const ok = !!r;
     const timeLabel = m.tn ? `${m.t}<br><span style="font-size:9px;color:var(--muted)">${m.tn} МСК</span>` : `${m.t} МСК`;
-    return `<div class="mc" data-mid="${m.id}">
-      <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${ok ? 'done' : 'up'}">${ok ? '✓ Сыгран' : 'Предстоит'}</span></div>
-      <div class="mts">
-        <div class="mt">${th ? th.flag : ''} ${m.h}</div>
-        <div class="sw">
-          <input class="si" type="number" min="0" max="30" value="${r ? r.homeScore : ''}" placeholder="–" oninput="setScore(${m.id},'home',this.value)">
-          <span class="sep">:</span>
-          <input class="si" type="number" min="0" max="30" value="${r ? r.awayScore : ''}" placeholder="–" oninput="setScore(${m.id},'away',this.value)">
-        </div>
-        <div class="mt r">${m.a} ${ta ? ta.flag : ''}</div>
-      </div></div>`;
-  }).join('') || '<div class="empty"><div class="ei">📅</div><p>Нет матчей в этот день</p></div>';
+    if (isGrp) {
+      return `<div class="mc" data-mid="${m.id}">
+        <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${ok?'done':'up'}">${ok?'✓ Сыгран':'Предстоит'}</span></div>
+        <div class="mts">
+          <div class="mt">${th?th.flag:''} ${m.h}</div>
+          <div class="sw">
+            <input class="si" type="number" min="0" max="30" value="${r?r.homeScore:''}" placeholder="–" oninput="setScore(${m.id},'home',this.value)">
+            <span class="sep">:</span>
+            <input class="si" type="number" min="0" max="30" value="${r?r.awayScore:''}" placeholder="–" oninput="setScore(${m.id},'away',this.value)">
+          </div>
+          <div class="mt r">${m.a} ${ta?ta.flag:''}</div>
+        </div></div>`;
+    } else {
+      const roundLbl = PO_LBL[m.g] || m.g;
+      return `<div class="mc" data-mid="${m.id}">
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLbl}</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${ok?'done':'up'}">${ok?'✓ Сыгран':'Предстоит'}</span></div>
+        <div style="flex:1">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-align:center">${m.lbl||''}</div>
+          <div class="mts">
+            <div class="mt">${m.h||'TBD'}</div>
+            <div class="sw">
+              <input class="si" type="number" min="0" max="30" value="${r?r.homeScore:''}" placeholder="–" oninput="setScore(${m.id},'home',this.value)">
+              <span class="sep">:</span>
+              <input class="si" type="number" min="0" max="30" value="${r?r.awayScore:''}" placeholder="–" oninput="setScore(${m.id},'away',this.value)">
+            </div>
+            <div class="mt r">${m.a||'TBD'}</div>
+          </div>
+        </div></div>`;
+    }
+  }).join('');
 }
 
 // Дебаунс — отправляем на сервер через 800мс после последнего нажатия
@@ -771,24 +794,30 @@ function rPredictAdmin() {
 
 function rPBodyAdminView() {
   const el = document.getElementById('pb'); if (!el) return;
+  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const viewPreds = (allPreds[curViewUserId] && allPreds[curViewUserId].group) || {};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
   el.innerHTML = ms.map(m => {
-    const th = GROUPS[m.g].find(t => t.name === m.h), ta = GROUPS[m.g].find(t => t.name === m.a);
+    const isGroup = GRP_IDS.includes(m.g);
+    const th = isGroup ? GROUPS[m.g].find(t => t.name === m.h) : null;
+    const ta = isGroup ? GROUPS[m.g].find(t => t.name === m.a) : null;
     const p = viewPreds[m.id];
     const r = results[m.id];
     const hasP = p && p.h != null && p.a != null;
     const { hl, lbl } = predHL(hasP ? p : null, r);
     const timeLabel = m.tn ? `${m.t}<br><span style="font-size:9px;color:var(--muted)">${m.tn} МСК</span>` : `${m.t} МСК`;
+    const metaLabel = isGroup ? `Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
       : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
-    const realInfo = r
-      ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>`
-      : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
     return `<div class="mc" style="${hl}">
-      <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
-      <div style="flex:1"><div class="mts"><div class="mt">${th ? th.flag : ''} ${m.h}</div>${predDisp}<div class="mt r">${m.a} ${ta ? ta.flag : ''}</div></div>${realInfo}</div></div>`;
+      <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
+      <div style="flex:1">
+        ${!isGroup && m.lbl ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${m.lbl}</div>` : ''}
+        <div class="mts"><div class="mt">${th?th.flag:''} ${m.h||'TBD'}</div>${predDisp}<div class="mt r">${m.a||'TBD'} ${ta?ta.flag:''}</div></div>${realInfo}
+      </div></div>`;
   }).join('');
 }
 
@@ -946,24 +975,40 @@ function rBracket() {
   const isA = session && session.isAdmin;
   el.innerHTML = '';
   POR.forEach(round => {
-    const slots = playoffState[round.id] || Array.from({ length: round.slots }, () => ({ home: '', away: '', homeScore: null, awayScore: null, winner: null }));
+    const serverSlots = playoffState[round.id] || [];
+    const schSlots = SCH.map((s,i)=>({...s,id:i+1})).filter(s=>s.g===round.id);
+    // Merge: use server slot if has teams, else TBD from schedule
+    const slots = Array.from({length: round.slots}, (_, idx) => {
+      const srv = serverSlots[idx];
+      if (srv && (srv.home !== '' || srv.away !== '')) return srv;
+      const sch = schSlots[idx];
+      return { home:'', away:'', homeScore:null, awayScore:null, winner:null, _lbl: sch?sch.lbl:'', _t: sch?sch.t:'' };
+    });
     const col = document.createElement('div'); col.className = 'bcol';
     col.innerHTML = `<div class="bhead">${round.label}</div>`;
     const body = document.createElement('div'); body.className = 'bbody';
     slots.forEach((m, idx) => {
-      if (!m) m = { home: '', away: '', homeScore: null, awayScore: null, winner: null };
+      if (!m) m = { home:'', away:'', homeScore:null, awayScore:null, winner:null };
       const hOk = m.home !== '', aOk = m.away !== '';
       const hW = m.winner === m.home && hOk, aW = m.winner === m.away && aOk;
       const bm = document.createElement('div'); bm.className = 'bm';
-      const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.homeScore != null ? m.homeScore : ''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (m.homeScore != null ? `<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.homeScore}</span>` : '');
-      const sA = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.awayScore != null ? m.awayScore : ''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'away',this.value)">` : (m.awayScore != null ? `<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.awayScore}</span>` : '');
-      bm.innerHTML = `
-        <div class="bt ${hW ? 'win' : aW && hOk ? 'lose' : !hOk ? 'tbd' : ''}${!isA ? ' ro' : ''}" ${isA ? `onclick="pickW('${round.id}',${idx},'home')"` : ''}>
-          <span class="bfl">${hOk ? (gFlag(m.home) || '🏳️') : ''}</span><span>${m.home || '—'}</span>${sH}
-        </div>
-        <div class="bt ${aW ? 'win' : hW && aOk ? 'lose' : !aOk ? 'tbd' : ''}${!isA ? ' ro' : ''}" ${isA ? `onclick="pickW('${round.id}',${idx},'away')"` : ''}>
-          <span class="bfl">${aOk ? (gFlag(m.away) || '🏳️') : ''}</span><span>${m.away || '—'}</span>${sA}
+      if (!hOk && !aOk) {
+        // TBD match — show label and time
+        bm.innerHTML = `<div class="bt tbd ro" style="justify-content:center;text-align:center;padding:9px 6px;flex-direction:column;gap:2px;cursor:default">
+          <span style="font-size:11px">${m._lbl||'TBD'}</span>
+          ${m._t ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${m._t} МСК</span>` : ''}
         </div>`;
+      } else {
+        const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.homeScore!=null?m.homeScore:''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (m.homeScore!=null?`<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.homeScore}</span>`:'');
+        const sA = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.awayScore!=null?m.awayScore:''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'away',this.value)">` : (m.awayScore!=null?`<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.awayScore}</span>`:'');
+        bm.innerHTML = `
+          <div class="bt ${hW?'win':aW&&hOk?'lose':''}${!isA?' ro':''}" ${isA?`onclick="pickW('${round.id}',${idx},'home')"`:''}>
+            <span class="bfl">${hOk?(gFlag(m.home)||'🏳️'):''}</span><span>${m.home||'—'}</span>${sH}
+          </div>
+          <div class="bt ${aW?'win':hW&&aOk?'lose':''}${!isA?' ro':''}" ${isA?`onclick="pickW('${round.id}',${idx},'away')"`:''}>
+            <span class="bfl">${aOk?(gFlag(m.away)||'🏳️'):''}</span><span>${m.away||'—'}</span>${sA}
+          </div>`;
+      }
       body.appendChild(bm);
     });
     col.appendChild(body); el.appendChild(col);
