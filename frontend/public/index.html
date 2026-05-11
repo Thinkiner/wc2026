@@ -600,7 +600,7 @@ function rMBody() {
     const ta = isGrp ? GROUPS[m.g].find(t => t.name === m.a) : null;
     const r = results[m.id];
     const ok = !!r;
-    const timeLabel = m.tn ? `${m.t}<br><span style="font-size:9px;color:var(--muted)">${m.tn} МСК</span>` : `${m.t} МСК`;
+    const timeLabel = m.tn ? `${m.t} МСК<br><span style="font-size:9px;color:var(--muted)">ночью ${m.tn}</span>` : `${m.t} МСК`;
     if (isGrp) {
       return `<div class="mc" data-mid="${m.id}">
         <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${ok?'done':'up'}">${ok?'✓ Сыгран':'Предстоит'}</span></div>
@@ -717,8 +717,9 @@ function rPredict() {
   if (session.isAdmin) { rPredictAdmin(); return; }
   // ── PLAYER VIEW ──
   const preds = myPreds.group || {};
-  const dates = [...new Set(SCH.map(s => s.d))].sort();
-  if (!curPredDate || !dates.includes(curPredDate)) curPredDate = dates[0];
+  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const groupDates = [...new Set(SCH.filter(s => GRP_IDS_P.includes(s.g)).map(s => s.d))].sort();
+  if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
   const st = calcPts(preds);
   const statsBar = `<div style="display:flex;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 16px;margin-bottom:14px;">
     <span style="font-size:12px;color:var(--muted)">📝 <b style="color:var(--text)">${st.predicted}/${SCH.length}</b></span>
@@ -732,7 +733,7 @@ function rPredict() {
     <div class="stab${curPredTab === 'playoff' ? ' active' : ''}" onclick="curPredTab='playoff';rPredict()">🏆 Плей-офф</div>
   </div>`;
   let body = curPredTab === 'group'
-    ? `<div class="tabs">${dates.map(d => `<div class="tab${d === curPredDate ? ' active' : ''}" onclick="setPD('${d}')">${fmtD(d)}</div>`).join('')}</div><div id="pb" class="ml"></div>`
+    ? `<div class="tabs">${groupDates.map(d => `<div class="tab${d === curPredDate ? ' active' : ''}" onclick="setPD('${d}')">${fmtD(d)}</div>`).join('')}</div><div id="pb" class="ml"></div>`
     : `<div id="pb-po"></div>`;
   document.getElementById('page-predict').innerHTML =
     `<div class="stitle">Прогнозы</div><div class="ssub">Введите счёт каждого матча — очки считаются автоматически</div>${statsBar}${subTabs}${body}`;
@@ -806,7 +807,7 @@ function rPBodyAdminView() {
     const r = results[m.id];
     const hasP = p && p.h != null && p.a != null;
     const { hl, lbl } = predHL(hasP ? p : null, r);
-    const timeLabel = m.tn ? `${m.t}<br><span style="font-size:9px;color:var(--muted)">${m.tn} МСК</span>` : `${m.t} МСК`;
+    const timeLabel = m.tn ? `${m.t} МСК<br><span style="font-size:9px;color:var(--muted)">ночью ${m.tn}</span>` : `${m.t} МСК`;
     const metaLabel = isGroup ? `Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
@@ -867,34 +868,28 @@ function rPBody() {
   const preds = myPreds.group || {};
   const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
-  const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
+  // Только групповой этап! Плей-офф идёт в rPBodyPO
+  const ms = SCH.map((s, i) => ({ ...s, id: i + 1 }))
+    .filter(s => s.d === curPredDate && GRP_IDS.includes(s.g));
+  if (!ms.length) { el.innerHTML = '<div class="empty"><div class="ei">📅</div><p>Нет матчей группового этапа в этот день</p></div>'; return; }
   el.innerHTML = ms.map(m => {
-    const isGroup = GRP_IDS.includes(m.g);
-    const th = isGroup ? GROUPS[m.g].find(t => t.name === m.h) : null;
-    const ta = isGroup ? GROUPS[m.g].find(t => t.name === m.a) : null;
+    const th = GROUPS[m.g].find(t => t.name === m.h);
+    const ta = GROUPS[m.g].find(t => t.name === m.a);
     const p = preds[m.id] || {};
     const r = results[m.id];
     const { hl, lbl } = predHL(p, r);
     const matchStart = new Date(m.d + 'T' + (m.t || '23:00') + ':00+03:00');
     const matchStarted = Date.now() >= matchStart.getTime();
     const locked = (!!r || matchStarted) && !session.isAdmin;
-    const timeLabel = m.tn ? m.t + '<br><span style="font-size:9px;color:var(--muted)">' + m.tn + ' МСК</span>' : m.t + ' МСК';
-    const metaLabel = isGroup ? `Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
+    const timeLabel = m.tn ? m.t + ' МСК<br><span style="font-size:9px;color:var(--muted)">ночью ' + m.tn + '</span>' : m.t + ' МСК';
     const realInfo = r && session.isAdmin ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
-    // Playoff matches without teams yet — show as info only
-    if (!isGroup && !m.h && !session.isAdmin) {
-      return `<div class="mc">
-        <div class="mm"><div class="mg" style="font-size:10px">${metaLabel}</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span></div>
-        <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${m.lbl||'Команды определятся после группового этапа'}</div></div></div>`;
-    }
     const inputArea = locked
       ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
       : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePred(${m.id},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePred(${m.id},'a',this.value)"></div>`;
     return `<div class="mc" style="${hl}">
-      <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${locked ? 'done' : r ? 'done' : 'up'}">${locked && !r ? '🔒 Начался' : r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
+      <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${locked ? 'done' : r ? 'done' : 'up'}">${locked && !r ? '🔒 Начался' : r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
       <div style="flex:1">
-        ${!isGroup && m.lbl ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${m.lbl}</div>` : ''}
-        <div class="mts"><div class="mt">${th ? th.flag : ''} ${m.h||'?'}</div>${inputArea}<div class="mt r">${m.a||'?'} ${ta ? ta.flag : ''}</div></div>${realInfo}
+        <div class="mts"><div class="mt">${th ? th.flag : ''} ${m.h}</div>${inputArea}<div class="mt r">${m.a} ${ta ? ta.flag : ''}</div></div>${realInfo}
       </div></div>`;
   }).join('');
 }
@@ -902,33 +897,49 @@ function rPBody() {
 function rPBodyPO() {
   const el = document.getElementById('pb-po'); if (!el) return;
   const poPreds = myPreds.playoff || {};
+  const PO_IDS = ['r32','r16','qf','sf','3rd','fin'];
+  const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   let html = '';
   POR.forEach(round => {
-    const slots = playoffState[round.id] || [];
-    const hasAny = slots.some(s => s && (s.home !== '' || s.away !== ''));
-    if (!hasAny) return;
-    html += `<div style="margin-bottom:20px"><div style="font-family:'Bebas Neue',cursive;font-size:16px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">${round.label}</div><div class="ml">`;
-    slots.forEach((m, idx) => {
-      if (!m || (m.home === '' && m.away === '')) return;
+    // Берём матчи из SCH для этого раунда
+    const schSlots = SCH.map((s,i) => ({...s, id:i+1})).filter(s => s.g === round.id);
+    if (!schSlots.length) return;
+    html += `<div style="margin-bottom:20px">
+      <div style="font-family:'Bebas Neue',cursive;font-size:16px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">${round.label}</div>
+      <div class="ml">`;
+    schSlots.forEach((sch, idx) => {
+      // Проверяем есть ли уже реальные команды в playoffState
+      const srv = (playoffState[round.id] || [])[idx];
+      const home = (srv && srv.home) ? srv.home : '';
+      const away = (srv && srv.away) ? srv.away : '';
+      const homeScore = srv ? srv.homeScore : null;
+      const awayScore = srv ? srv.awayScore : null;
       const key = `${round.id}_${idx}`;
       const p = poPreds[key] || {};
-      const r = (m.homeScore != null && m.awayScore != null) ? { homeScore: m.homeScore, awayScore: m.awayScore } : null;
+      const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore } : null;
       const { hl, lbl } = predHL(p, r);
-      // Блокируем если матч уже начался (по времени МСК) и нет результата
-    const matchStart = new Date(m.d + 'T' + (m.t || '23:00') + ':00+03:00');
-    const matchStarted = Date.now() >= matchStart.getTime();
-    const locked = (!!r || matchStarted) && !session.isAdmin;
-      const inputArea = locked
-        ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
-        : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePredPO('${round.id}',${idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePredPO('${round.id}',${idx},'a',this.value)"></div>`;
-      const hFlag = gFlag(m.home), aFlag = gFlag(m.away);
-      html += `<div class="mc" style="${hl}">
-        <div class="mm"><div class="mg">${round.label.split(' ')[0]}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1"><div class="mts"><div class="mt">${hFlag} ${m.home || '—'}</div>${inputArea}<div class="mt r">${m.away || '—'} ${aFlag}</div></div></div></div>`;
+      const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
+      const matchStarted = Date.now() >= matchStart.getTime();
+      const locked = (!!r || matchStarted) && !session.isAdmin;
+      const timeLabel = sch.tn ? sch.t + ' МСК <span style="font-size:9px;color:var(--muted)">' + sch.tn + '</span>' : sch.t + ' МСК';
+      const hFlag = gFlag(home), aFlag = gFlag(away);
+      if (!home && !away) {
+        // TBD — показываем обозначение
+        html += `<div class="mc" style="${hl}">
+          <div class="mm"><div class="mg" style="font-size:10px">${round.label.split(' ')[0]}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
+          <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${sch.lbl||'Команды определятся позже'}</div></div></div>`;
+      } else {
+        const inputArea = locked
+          ? `<div class="sdisp"><div class="sbox${p.h!=null?' has':''}">${p.h!=null?p.h:'–'}</div><span class="sep">:</span><div class="sbox${p.a!=null?' has':''}">${p.a!=null?p.a:'–'}</div></div>`
+          : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h!=null?p.h:''}" placeholder="–" oninput="savePredPO('${round.id}',${idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a!=null?p.a:''}" placeholder="–" oninput="savePredPO('${round.id}',${idx},'a',this.value)"></div>`;
+        html += `<div class="mc" style="${hl}">
+          <div class="mm"><div class="mg" style="font-size:10px">${round.label.split(' ')[0]}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
+          <div style="flex:1"><div class="mts"><div class="mt">${hFlag} ${home}</div>${inputArea}<div class="mt r">${away} ${aFlag}</div></div></div></div>`;
+      }
     });
     html += '</div></div>';
   });
-  el.innerHTML = html || '<div class="empty"><div class="ei">⏳</div><p>Сетка плей-офф ещё не заполнена</p></div>';
+  el.innerHTML = html || '<div class="empty"><div class="ei">⏳</div><p>Раунды плей-офф не найдены</p></div>';
 }
 
 // Дебаунс для прогнозов
