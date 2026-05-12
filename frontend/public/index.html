@@ -1144,18 +1144,26 @@ function rLB() {
   const done = Object.keys(results).length;
   el.innerHTML = `<div class="stitle">Рейтинг игроков</div>
     <div class="ssub">Сыграно: <b>${done}</b> из <b>${SCH.length}</b> матчей</div>
-    <div style="background:var(--card);border:1px solid var(--accent);border-radius:12px;padding:18px 20px;margin-bottom:18px;line-height:1.9;font-size:13px;">
-      <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--accent);margin-bottom:10px">📋 Правила конкурса</div>
-      <ol style="padding-left:18px;color:var(--muted);">
-        <li>Присылать нужно только счёт матча в формате <b style="color:var(--text)">КОМАНДА1 [0:0] КОМАНДА2</b>, где в [ : ] вы вписываете цифры.</li>
-        <li>За <b style="color:var(--text)">неудачный результат</b> (не угадал счёт и победителя) — <b style="color:var(--text)">0 баллов</b>.</li>
-        <li>За <b style="color:var(--green)">угаданного победителя или угаданную ничью</b> — <b style="color:var(--green)">2 балла</b>.</li>
-        <li>За <b style="color:var(--green)">разницу в 1 гол при угаданном победителе</b> (напр., прогноз 0:2, результат 0:3, 1:2 или 0:1) — дополнительно <b style="color:var(--green)">+1 балл</b>.</li>
-        <li>За <b style="color:var(--green)">точный счёт</b> — дополнительно <b style="color:var(--green)">+2 балла</b>.</li>
-        <li><b style="color:#e74c3c">Штраф</b> за неотправленный или отправленный после начала матча прогноз — <b style="color:#e74c3c">−1 балл</b>.</li>
-        <li>В <b style="color:var(--text)">плей-офф</b> ничьи не учитываются — нужно выбрать победителя. Доп. очки за разницу и точный счёт присваиваются, кроме матчей с серией пенальти.</li>
-        <li><b style="color:var(--accent)">Победитель</b> определяется наибольшей суммой баллов после финального матча.</li>
-      </ol>
+    <div style="background:var(--card);border:1px solid var(--accent);border-radius:12px;margin-bottom:18px;overflow:hidden;">
+      <div onclick="toggleRules()" style="padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;color:var(--accent)">📋 Правила конкурса</div>
+        <div id="rules-hint" style="font-size:12px;color:var(--muted)">подробнее ▾</div>
+      </div>
+      <div id="rules-body" style="max-height:0;overflow:hidden;transition:max-height 0.4s ease;padding:0 20px;">
+        <div style="padding-bottom:18px;line-height:1.9;font-size:13px;">
+          <ol style="padding-left:18px;color:var(--muted);">
+            <li>Присылать нужно только счёт матча в формате <b style="color:var(--text)">КОМАНДА1 [0:0] КОМАНДА2</b>, где в [ : ] вы вписываете цифры.</li>
+            <li>За <b style="color:var(--text)">неудачный результат</b> (не угадал счёт и победителя) — <b style="color:var(--text)">0 баллов</b>.</li>
+            <li>За <b style="color:var(--green)">угаданного победителя или угаданную ничью</b> — <b style="color:var(--green)">2 балла</b>.</li>
+            <li>За <b style="color:var(--green)">разницу в 1 гол при угаданном победителе</b> (напр., прогноз 0:2, результат 0:3, 1:2 или 0:1) — дополнительно <b style="color:var(--green)">+1 балл</b>.</li>
+            <li>За <b style="color:var(--green)">точный счёт</b> — дополнительно <b style="color:var(--green)">+2 балла</b>.</li>
+            <li><b style="color:#e74c3c">Штраф</b> за неотправленный или отправленный после начала матча прогноз — <b style="color:#e74c3c">−1 балл</b>.</li>
+            <li>В <b style="color:var(--text)">плей-офф</b> ничьи не учитываются — нужно выбрать победителя. Доп. очки за разницу и точный счёт присваиваются, кроме матчей с серией пенальти.</li>
+            <li><b style="color:var(--accent)">Победитель</b> определяется наибольшей суммой баллов после финального матча.</li>
+          </ol>
+          <div onclick="toggleRules()" style="text-align:center;margin-top:12px;cursor:pointer;font-size:12px;color:var(--muted)">скрыть ▴</div>
+        </div>
+      </div>
     </div>
     ${scored.length === 0
       ? '<div class="empty"><div class="ei">🏆</div><p>Пока нет прогнозов</p></div>'
@@ -1214,6 +1222,53 @@ async function reloadData() {
   rp(curPage);
   toast('✓ Данные обновлены');
 }
+
+// ── RULES TOGGLE ─────────────────────────────────
+let rulesOpen = false;
+function toggleRules() {
+  rulesOpen = !rulesOpen;
+  const body = document.getElementById('rules-body');
+  const hint = document.getElementById('rules-hint');
+  if (!body || !hint) return;
+  if (rulesOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    hint.textContent = 'скрыть ▴';
+  } else {
+    body.style.maxHeight = '0';
+    hint.textContent = 'подробнее ▾';
+  }
+}
+
+// ── RULES TOGGLE ─────────────────────────────────
+let rulesOpen = false;
+function toggleRules() {
+  rulesOpen = !rulesOpen;
+  const body = document.getElementById('rules-body');
+  const hint = document.getElementById('rules-hint');
+  if (!body || !hint) return;
+  if (rulesOpen) {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    hint.textContent = 'скрыть ▴';
+  } else {
+    body.style.maxHeight = '0';
+    hint.textContent = 'подробнее ▾';
+  }
+}
+
+// ── AUTO-LOCK TIMER ───────────────────────────────
+// Каждые 30 секунд проверяем не начался ли матч
+// Если да — перерисовываем страницу прогнозов чтобы
+// заблокировать поля ввода без перезагрузки страницы
+setInterval(() => {
+  if (curPage === 'predict' && session && !session.isAdmin) {
+    const now = Date.now();
+    const justStarted = SCH.some(s => {
+      const start = new Date(s.d + 'T' + (s.t || '23:00') + ':00+03:00').getTime();
+      return start <= now && start > now - 60000;
+    });
+    if (justStarted) rPredict();
+  }
+}, 30000);
 
 // ── INIT ─────────────────────────────────────────
 document.querySelector('header').style.display = 'none';
