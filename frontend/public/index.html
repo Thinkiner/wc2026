@@ -837,42 +837,54 @@ function rPBodyPOAdminView() {
   const el = document.getElementById('pb-po'); if (!el) return;
   const poPreds = (allPreds[curViewUserId] && allPreds[curViewUserId].playoff) || {};
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
-  let html = '';
+
+  // Все матчи плей-офф с индексом внутри раунда
+  const allPO = [];
   POR.forEach(round => {
-    const schSlots = SCH.map((s,i) => ({...s,id:i+1})).filter(s => s.g === round.id);
-    if (!schSlots.length) return;
-    html += `<div style="margin-bottom:20px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:16px;color:var(--accent);letter-spacing:2px;margin-bottom:10px">${round.label}</div>
-      <div class="ml">`;
-    schSlots.forEach((sch, idx) => {
-      const srv = (playoffState[round.id] || [])[idx];
-      const home = (srv && srv.home) ? srv.home : '';
-      const away = (srv && srv.away) ? srv.away : '';
-      const homeScore = srv ? srv.homeScore : null;
-      const awayScore = srv ? srv.awayScore : null;
-      const key = round.id + '_' + idx;
-      const p = poPreds[key];
-      const hasP = p && p.h != null && p.a != null;
-      const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore } : null;
-      const { hl, lbl } = predHL(hasP ? p : null, r);
-      const hFlag = gFlag(home), aFlag = gFlag(away);
-      const predDisp = hasP
-        ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
-        : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
-      const timeLabel = sch.t + ' МСК' + (sch.tn ? ` <span style="font-size:9px;color:var(--muted)">ночью ${sch.tn}</span>` : '');
-      if (!home && !away) {
-        html += `<div class="mc" style="${hl}">
-          <div class="mm"><div class="mg" style="font-size:10px">${PO_LABEL[round.id]||round.id}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
-          <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${sch.lbl||'TBD'}</div>${predDisp}</div></div>`;
-      } else {
-        html += `<div class="mc" style="${hl}">
-          <div class="mm"><div class="mg" style="font-size:10px">${PO_LABEL[round.id]||round.id}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
-          <div style="flex:1"><div class="mts"><div class="mt">${hFlag} ${home}</div>${predDisp}<div class="mt r">${away} ${aFlag}</div></div></div></div>`;
-      }
-    });
-    html += '</div></div>';
+    const slots = SCH.map((s,i) => ({...s,id:i+1})).filter(s => s.g === round.id);
+    slots.forEach((sch, idx) => allPO.push({...sch, _roundId: round.id, _roundLabel: round.label, _idx: idx}));
   });
-  el.innerHTML = html || '<div class="empty"><div class="ei">⏳</div><p>Сетка плей-офф ещё не заполнена</p></div>';
+
+  const poDates = [...new Set(allPO.map(m => m.d))].sort();
+  if (!poDates.length) { el.innerHTML = '<div class="empty"><div class="ei">⏳</div><p>Матчи плей-офф не найдены</p></div>'; return; }
+  if (!window.curPODate || !poDates.includes(window.curPODate)) window.curPODate = poDates[0];
+
+  const ms = allPO.filter(m => m.d === window.curPODate);
+
+  let html = `<div class="tabs">${poDates.map(d => `<div class="tab${d===window.curPODate?' active':''}" onclick="window.curPODate='${d}';rPBodyPOAdminView()">${fmtD(d)}</div>`).join('')}</div><div class="ml">`;
+
+  ms.forEach(sch => {
+    const srv = (playoffState[sch._roundId] || [])[sch._idx];
+    const home = (srv && srv.home) ? srv.home : '';
+    const away = (srv && srv.away) ? srv.away : '';
+    const homeScore = srv ? srv.homeScore : null;
+    const awayScore = srv ? srv.awayScore : null;
+    const key = sch._roundId + '_' + sch._idx;
+    const p = poPreds[key];
+    const hasP = p && p.h != null && p.a != null;
+    const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore } : null;
+    const { hl, lbl } = predHL(hasP ? p : null, r);
+    const hFlag = gFlag(home), aFlag = gFlag(away);
+    const predDisp = hasP
+      ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
+      : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
+    const timeLabel = sch.tn
+      ? sch.t + ' МСК<br><span style="font-size:9px;color:var(--muted)">ночью ' + sch.tn + '</span>'
+      : sch.t + ' МСК';
+    const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
+    if (!home && !away) {
+      html += `<div class="mc" style="${hl}">
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
+        <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${sch.lbl||'TBD'}</div>${predDisp}</div></div>`;
+    } else {
+      html += `<div class="mc" style="${hl}">
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
+        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt">${hFlag} ${home}</div>${predDisp}<div class="mt r">${away} ${aFlag}</div></div></div></div>`;
+    }
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
 }
 function setPD(d) { curPredDate = d; rPredict(); }
 
