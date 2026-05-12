@@ -795,7 +795,7 @@ function rPredictAdmin() {
   if (!curViewUserId) {
     body = '<div class="empty"><div class="ei">👆</div><p>Выберите игрока для просмотра прогнозов</p></div>';
   } else if (curPredTab === 'group') {
-    body = `<div class="tabs">${groupDates.map(d => `<div class="tab${d === curPredDate ? ' active' : ''}" onclick="curPredDate='${d}';rPredictAdmin()">${fmtD(d)}</div>`).join('')}</div><div id="pb" class="ml"></div>`;
+    body = `<div class="tabs">${groupDates.map(d => `<div class="tab${d === curPredDate ? ' active' : ''}" onclick="curPredDate='${d}';rPredictAdmin();setTimeout(()=>scrollActiveTab(document.querySelector('#page-predict .tabs')),30)">${fmtD(d)}</div>`).join('')}</div><div id="pb" class="ml"></div>`;
   } else {
     body = `<div id="pb-po"></div>`;
   }
@@ -828,8 +828,9 @@ function rPBodyAdminView() {
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
       : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
     const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
+    const adminNoPred = r && !hasP;
     return `<div class="mc" style="${hl}">
-      <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
+      <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${adminNoPred ? '<span style="font-size:10px;font-weight:700;color:#e74c3c;margin-left:4px">−1 штраф</span>' : lbl}</div>
       <div style="flex:1">
         ${!isGroup && m.lbl ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${m.lbl}</div>` : ''}
         <div class="mts"><div class="mt">${th?th.flag:''} ${m.h||'TBD'}</div>${predDisp}<div class="mt r">${m.a||'TBD'} ${ta?ta.flag:''}</div></div>${realInfo}
@@ -855,7 +856,7 @@ function rPBodyPOAdminView() {
 
   const ms = allPO.filter(m => m.d === window.curPODate);
 
-  let html = `<div class="tabs">${poDates.map(d => `<div class="tab${d===window.curPODate?' active':''}" onclick="window.curPODate='${d}';rPBodyPOAdminView()">${fmtD(d)}</div>`).join('')}</div><div class="ml">`;
+  let html = `<div class="tabs">${poDates.map(d => `<div class="tab${d===window.curPODate?' active':''}" onclick="window.curPODate='${d}';rPBodyPOAdminView();setTimeout(()=>scrollActiveTab(document.querySelector('#pb-po .tabs')),30)">${fmtD(d)}</div>`).join('')}</div><div class="ml">`;
 
   ms.forEach(sch => {
     const srv = (playoffState[sch._roundId] || [])[sch._idx];
@@ -960,7 +961,7 @@ function rPBodyPO() {
 
   const ms = allPO.filter(m => m.d === window.curPODate);
 
-  let html = `<div class="tabs">${poDates.map(d => `<div class="tab${d===window.curPODate?' active':''}" onclick="window.curPODate='${d}';rPBodyPO()">${fmtD(d)}</div>`).join('')}</div><div class="ml">`;
+  let html = `<div class="tabs">${poDates.map(d => `<div class="tab${d===window.curPODate?' active':''}" onclick="window.curPODate='${d}';rPBodyPO();setTimeout(()=>scrollActiveTab(document.querySelector('#pb-po .tabs')),30)">${fmtD(d)}</div>`).join('')}</div><div class="ml">`;
 
   ms.forEach(sch => {
     const srv = (playoffState[sch._roundId] || [])[sch._idx];
@@ -1075,7 +1076,7 @@ function rBracket() {
         // TBD match — show label and time
         bm.innerHTML = `<div class="bt tbd ro" style="justify-content:center;text-align:center;padding:9px 6px;flex-direction:column;gap:2px;cursor:default">
           <span style="font-size:11px">${m._lbl||'TBD'}</span>
-          ${m._t ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${m._t}${m._d?' '+fmtBracketDate(m._d):''} МСК</span>` : ''}
+          ${m._t ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${m._t}${m._d?' '+fmtBracketDate(m._d):''}</span>` : ''}
         </div>`;
       } else {
         const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.homeScore!=null?m.homeScore:''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (m.homeScore!=null?`<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.homeScore}</span>`:'');
