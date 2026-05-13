@@ -1239,22 +1239,6 @@ function toggleRules() {
   }
 }
 
-// ── RULES TOGGLE ─────────────────────────────────
-let rulesOpen = false;
-function toggleRules() {
-  rulesOpen = !rulesOpen;
-  const body = document.getElementById('rules-body');
-  const hint = document.getElementById('rules-hint');
-  if (!body || !hint) return;
-  if (rulesOpen) {
-    body.style.maxHeight = body.scrollHeight + 'px';
-    hint.textContent = 'скрыть ▴';
-  } else {
-    body.style.maxHeight = '0';
-    hint.textContent = 'подробнее ▾';
-  }
-}
-
 // ── AUTO-LOCK TIMER ───────────────────────────────
 // Каждые 30 секунд проверяем не начался ли матч
 // Если да — перерисовываем страницу прогнозов чтобы
