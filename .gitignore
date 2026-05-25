@@ -4,3 +4,5 @@ backend/node_modules/
 .DS_Store
 *.log
 .vercel
+.vercel-api-files.zip
+.favicon
