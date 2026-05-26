@@ -5,4 +5,3 @@ backend/node_modules/
 *.log
 .vercel
 .vercel-api-files.zip
-favicon
