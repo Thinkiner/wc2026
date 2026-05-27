@@ -246,6 +246,7 @@ const GROUPS={
   J:[{name:'Аргентина',flag:'🇦🇷'},{name:'Алжир',flag:'🇩🇿'},{name:'Австрия',flag:'🇦🇹'},{name:'Иордания',flag:'🇯🇴'}],
   K:[{name:'Португалия',flag:'🇵🇹'},{name:'ДР Конго',flag:'🇨🇩'},{name:'Узбекистан',flag:'🇺🇿'},{name:'Колумбия',flag:'🇨🇴'}],
   L:[{name:'Англия',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'Хорватия',flag:'🇭🇷'},{name:'Гана',flag:'🇬🇭'},{name:'Панама',flag:'🇵🇦'}],
+  TEST:[],
 };
 
 // Verified schedule from FIFA/NBC Sports/MLS Soccer
@@ -823,8 +824,8 @@ function rPBodyAdminView() {
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
   el.innerHTML = ms.map(m => {
     const isGroup = GRP_IDS.includes(m.g);
-    const th = isGroup ? GROUPS[m.g].find(t => t.name === m.h) : null;
-    const ta = isGroup ? GROUPS[m.g].find(t => t.name === m.a) : null;
+    const th = (isGroup && GROUPS[m.g] && GROUPS[m.g].length) ? GROUPS[m.g].find(t => t.name === m.h) : null;
+    const ta = (isGroup && GROUPS[m.g] && GROUPS[m.g].length) ? GROUPS[m.g].find(t => t.name === m.a) : null;
     const p = viewPreds[m.id];
     const r = results[m.id];
     const hasP = p && p.h != null && p.a != null;
