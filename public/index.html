@@ -266,6 +266,9 @@ const POR=[
 // Время МСК. Источник: championat.com/football/_worldcup/tournament/6858
 // tn = примечание если дата по МСК отличается от даты вкладки
 const SCH=[
+  // ══ ТЕСТОВЫЕ МАТЧИ (удалить после проверки блокировки) ══
+  {d:'2026-05-27',h:'Кристал Пэлас',a:'Райо Валекано',g:'TEST',t:'22:00',lbl:'Финал Лиги конференций УЕФА'},
+  {d:'2026-05-30',h:'ПСЖ',a:'Арсенал',g:'TEST',t:'19:00',lbl:'Финал Лиги чемпионов УЕФА'},
   // ══ ГРУППОВОЙ ЭТАП ══
   // ── Тур 1 ──
   {d:'2026-06-11',h:'Мексика',a:'ЮАР',g:'A',t:'22:00'},
@@ -608,14 +611,14 @@ function setD(d) {
 }
 function rMBody() {
   const el = document.getElementById('mb'); if (!el) return;
-  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
   const PO_LBL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curDate);
   if (!ms.length) { el.innerHTML = '<div class="empty"><div class="ei">📅</div><p>Нет матчей в этот день</p></div>'; return; }
   el.innerHTML = ms.map(m => {
     const isGrp = GRP.includes(m.g);
-    const th = isGrp ? GROUPS[m.g].find(t => t.name === m.h) : null;
-    const ta = isGrp ? GROUPS[m.g].find(t => t.name === m.a) : null;
+    const th = (isGrp && GROUPS[m.g] && GROUPS[m.g].length) ? GROUPS[m.g].find(t => t.name === m.h) : null;
+    const ta = (isGrp && GROUPS[m.g] && GROUPS[m.g].length) ? GROUPS[m.g].find(t => t.name === m.a) : null;
     const r = results[m.id];
     const ok = !!r;
     const timeLabel = m.tn ? `${m.t} МСК<br><span style="font-size:9px;color:var(--muted)">ночью ${m.tn}</span>` : `${m.t} МСК`;
@@ -704,7 +707,7 @@ function calcMatchPts(p, r) {
 
 function calcPts(predGroup) {
   let pts = 0, exact = 0, result = 0, predicted = 0, penalties = 0;
-  const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
   SCH.forEach((s, i) => {
     if (!GRP_IDS_C.includes(s.g) && !s.h) return; // skip TBD playoff matches
     const id = i + 1;
@@ -735,7 +738,7 @@ function rPredict() {
   if (session.isAdmin) { rPredictAdmin(); return; }
   // ── PLAYER VIEW ──
   const preds = myPreds.group || {};
-  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
   const groupDates = [...new Set(SCH.filter(s => GRP_IDS_P.includes(s.g)).map(s => s.d))].sort();
   if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
   const st = calcPts(preds);
@@ -827,7 +830,7 @@ function rPBodyAdminView() {
     const hasP = p && p.h != null && p.a != null;
     const { hl, lbl } = predHL(hasP ? p : null, r);
     const timeLabel = m.tn ? `${m.t} МСК<br><span style="font-size:9px;color:var(--muted)">ночью ${m.tn}</span>` : `${m.t} МСК`;
-    const metaLabel = isGroup ? `Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
+    const metaLabel = m.g === 'TEST' ? (m.lbl || '🧪 Тест') : isGroup ? `Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
       : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
@@ -916,15 +919,15 @@ function predHL(p, r) {
 function rPBody() {
   const el = document.getElementById('pb'); if (!el) return;
   const preds = myPreds.group || {};
-  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   // Только групповой этап! Плей-офф идёт в rPBodyPO
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 }))
     .filter(s => s.d === curPredDate && GRP_IDS.includes(s.g));
   if (!ms.length) { el.innerHTML = '<div class="empty"><div class="ei">📅</div><p>Нет матчей группового этапа в этот день</p></div>'; return; }
   el.innerHTML = ms.map(m => {
-    const th = GROUPS[m.g].find(t => t.name === m.h);
-    const ta = GROUPS[m.g].find(t => t.name === m.a);
+    const th = (GROUPS[m.g] && GROUPS[m.g].length) ? GROUPS[m.g].find(t => t.name === m.h) : null;
+    const ta = (GROUPS[m.g] && GROUPS[m.g].length) ? GROUPS[m.g].find(t => t.name === m.a) : null;
     const p = preds[m.id] || {};
     const r = results[m.id];
     const { hl, lbl } = predHL(p, r);
