@@ -45,6 +45,8 @@ header{background:linear-gradient(90deg,#080b12,#0e1428 50%,#080b12);border-bott
   main{padding:14px 10px 86px!important;}
   .hi{height:46px;}
   .logo{font-size:18px;}
+  *{font-style:normal!important;}
+  em,i{font-style:normal!important;}
 }
 .nm{display:none;}
 main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
@@ -1076,9 +1078,10 @@ function rBracket() {
       const bm = document.createElement('div'); bm.className = 'bm';
       if (!hOk && !aOk) {
         // TBD match — show label and time
-        bm.innerHTML = `<div class="bt tbd ro" style="justify-content:center;text-align:center;padding:9px 6px;flex-direction:column;gap:2px;cursor:default">
+        bm.innerHTML = `<div class="bt tbd ro" style="justify-content:center;text-align:center;padding:9px 6px;flex-direction:column;gap:3px;cursor:default">
           <span style="font-size:11px">${m._lbl||'TBD'}</span>
-          ${m._t ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${m._t}${m._d?' '+fmtBracketDate(m._d):''}</span>` : ''}
+          ${m._d ? `<span style="font-size:10px;color:var(--muted)">${fmtBracketDate(m._d)}</span>` : ''}
+          ${m._t ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${m._t}</span>` : ''}
         </div>`;
       } else {
         const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.homeScore!=null?m.homeScore:''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (m.homeScore!=null?`<span style="margin-left:auto;font-family:'Bebas Neue',cursive;font-size:13px;color:var(--accent)">${m.homeScore}</span>`:'');
