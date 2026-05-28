@@ -14,7 +14,7 @@
 body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;}
 header{background:linear-gradient(90deg,#080b12,#0e1428 50%,#080b12);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:200;box-shadow:0 4px 30px rgba(0,0,0,.6);}
 .hi{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:54px;gap:12px;}
-.logo{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:1px;color:var(--accent);white-space:nowrap;flex-shrink:0;font-style:normal!important;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:3px;color:var(--accent);white-space:nowrap;flex-shrink:0;font-style:normal!important;}
 .logo span{color:var(--accent2);}
 .hright{display:flex;align-items:center;gap:10px;}
 .nd{display:flex;gap:2px;}
@@ -53,7 +53,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 .page{display:none;animation:fi .2s ease;}
 .page.active{display:block;}
 @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.stitle{font-family:'Playfair Display',serif;font-size:30px;letter-spacing:1px;color:var(--accent);margin-bottom:4px;}
+.stitle{font-family:'Playfair Display',serif;font-size:30px;letter-spacing:4px;color:var(--accent);margin-bottom:4px;}
 .ssub{color:var(--muted);font-size:13px;margin-bottom:18px;}
 .tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
@@ -65,7 +65,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 @media(max-width:600px){.ggrid{grid-template-columns:1fr;}}
 .gc{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 .gh{background:linear-gradient(90deg,rgba(245,197,24,.12),transparent);border-bottom:1px solid var(--border);padding:9px 14px;}
-.gl{font-family:'Playfair Display',serif;font-size:18px;color:var(--accent);letter-spacing:0px;}
+.gl{font-family:'Playfair Display',serif;font-size:18px;color:var(--accent);letter-spacing:2px;}
 .gt{width:100%;border-collapse:collapse;font-size:12px;}
 .gt th{padding:5px 9px;text-align:left;color:var(--muted);font-size:10px;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);}
 .gt th.c{text-align:center;}
@@ -101,7 +101,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 .bwrap{overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch;}
 .bracket{display:flex;align-items:stretch;min-width:680px;}
 .bcol{flex:1;display:flex;flex-direction:column;}
-.bhead{font-family:'Playfair Display',serif;font-size:11px;letter-spacing:0px;color:var(--muted);text-align:center;padding:10px 5px;border-bottom:1px solid var(--border);}
+.bhead{font-family:'Playfair Display',serif;font-size:11px;letter-spacing:2px;color:var(--muted);text-align:center;padding:10px 5px;border-bottom:1px solid var(--border);}
 .bbody{flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:8px 4px;gap:8px;}
 .bm{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
 .bt{display:flex;align-items:center;gap:5px;padding:7px 9px;font-size:11px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
@@ -150,7 +150,7 @@ input[type=text]:focus,input[type=email]:focus,input[type=password]:focus{border
 /* auth */
 #as{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;}
 .abox{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:100%;max-width:380px;}
-.alogo{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:1px;color:var(--accent);margin-bottom:4px;}
+.alogo{font-family:'Playfair Display',serif;font-size:28px;letter-spacing:4px;color:var(--accent);margin-bottom:4px;}
 .alogo span{color:var(--accent2);}
 .asub{color:var(--muted);font-size:13px;margin-bottom:24px;}
 .atabs{display:flex;gap:8px;margin-bottom:20px;}
@@ -246,6 +246,7 @@ const GROUPS={
   J:[{name:'Аргентина',flag:'🇦🇷'},{name:'Алжир',flag:'🇩🇿'},{name:'Австрия',flag:'🇦🇹'},{name:'Иордания',flag:'🇯🇴'}],
   K:[{name:'Португалия',flag:'🇵🇹'},{name:'ДР Конго',flag:'🇨🇩'},{name:'Узбекистан',flag:'🇺🇿'},{name:'Колумбия',flag:'🇨🇴'}],
   L:[{name:'Англия',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'Хорватия',flag:'🇭🇷'},{name:'Гана',flag:'🇬🇭'},{name:'Панама',flag:'🇵🇦'}],
+  UCL:[],
 };
 
 // Verified schedule from FIFA/NBC Sports/MLS Soccer
@@ -267,8 +268,7 @@ const POR=[
 // tn = примечание если дата по МСК отличается от даты вкладки
 const SCH=[
   // ══ ТЕСТОВЫЕ МАТЧИ (удалить после проверки блокировки) ══
-  {d:'2026-05-27',h:'Кристал Пэлас',a:'Райо Валекано',g:'TEST',t:'22:00',lbl:'Финал Лиги конференций УЕФА'},
-  {d:'2026-05-30',h:'ПСЖ',a:'Арсенал',g:'TEST',t:'19:00',lbl:'Финал Лиги чемпионов УЕФА'},
+  {d:'2026-05-30',h:'ПСЖ',a:'Арсенал',g:'UCL',t:'19:00',lbl:'Финал Лиги чемпионов УЕФА'},
   // ══ ГРУППОВОЙ ЭТАП ══
   // ── Тур 1 ──
   {d:'2026-06-11',h:'Мексика',a:'ЮАР',g:'A',t:'22:00'},
@@ -611,7 +611,7 @@ function setD(d) {
 }
 function rMBody() {
   const el = document.getElementById('mb'); if (!el) return;
-  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
+  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
   const PO_LBL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curDate);
   if (!ms.length) { el.innerHTML = '<div class="empty"><div class="ei">📅</div><p>Нет матчей в этот день</p></div>'; return; }
@@ -707,7 +707,7 @@ function calcMatchPts(p, r) {
 
 function calcPts(predGroup) {
   let pts = 0, exact = 0, result = 0, predicted = 0, penalties = 0;
-  const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
+  const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
   SCH.forEach((s, i) => {
     if (!GRP_IDS_C.includes(s.g) && !s.h) return; // skip TBD playoff matches
     const id = i + 1;
@@ -738,7 +738,7 @@ function rPredict() {
   if (session.isAdmin) { rPredictAdmin(); return; }
   // ── PLAYER VIEW ──
   const preds = myPreds.group || {};
-  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
+  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
   const groupDates = [...new Set(SCH.filter(s => GRP_IDS_P.includes(s.g)).map(s => s.d))].sort();
   if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
   const st = calcPts(preds);
@@ -763,7 +763,7 @@ function rPredict() {
 
 function rPredictAdmin() {
   // ── ADMIN VIEW — выпадающий список игроков, только просмотр ──
-  const GRP_IDS_A = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
+  const GRP_IDS_A = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
   const groupDates = [...new Set(SCH.filter(s => GRP_IDS_A.includes(s.g)).map(s => s.d))].sort();
   if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
 
@@ -817,7 +817,7 @@ function rPredictAdmin() {
 
 function rPBodyAdminView() {
   const el = document.getElementById('pb'); if (!el) return;
-  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
+  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const viewPreds = (allPreds[curViewUserId] && allPreds[curViewUserId].group) || {};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
@@ -830,7 +830,7 @@ function rPBodyAdminView() {
     const hasP = p && p.h != null && p.a != null;
     const { hl, lbl } = predHL(hasP ? p : null, r);
     const timeLabel = m.tn ? `${m.t} МСК<br><span style="font-size:9px;color:var(--muted)">ночью ${m.tn}</span>` : `${m.t} МСК`;
-    const metaLabel = m.g === 'TEST' ? (m.lbl || '🧪 Тест') : isGroup ? `Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
+    const metaLabel = m.g === 'UCL' ? (m.lbl || '🧪 Тест') : isGroup ? m.g==='UCL'?'Финал ЛЧ УЕФА':`Гр. ${m.g}` : (PO_LABEL[m.g] || m.g);
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
       : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
@@ -919,7 +919,7 @@ function predHL(p, r) {
 function rPBody() {
   const el = document.getElementById('pb'); if (!el) return;
   const preds = myPreds.group || {};
-  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','TEST'];
+  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   // Только групповой этап! Плей-офф идёт в rPBodyPO
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 }))
