@@ -128,5 +128,6 @@ async function apiGetUsers() {
 }
 
 async function apiDeleteUser(id) {
-  return apiFetch(`/matches/users/${id}`, { method: 'DELETE' });
+  return apiFetch(`/matches/users?id=${id}`, { method: 'DELETE' });
 }
+

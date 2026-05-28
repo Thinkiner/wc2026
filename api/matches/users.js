@@ -20,7 +20,8 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'DELETE') {
-      const userId = req.url.split('/').pop();
+      const userId = req.query?.id || req.body?.id || req.url.split('?id=')[1];
+      if (!userId) return res.status(400).json({ error: 'Нужен id пользователя' });
       await pool.query('DELETE FROM users WHERE id = $1', [userId]);
       return res.json({ ok: true });
     }
