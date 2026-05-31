@@ -246,7 +246,6 @@ const GROUPS={
   J:[{name:'Аргентина',flag:'🇦🇷'},{name:'Алжир',flag:'🇩🇿'},{name:'Австрия',flag:'🇦🇹'},{name:'Иордания',flag:'🇯🇴'}],
   K:[{name:'Португалия',flag:'🇵🇹'},{name:'ДР Конго',flag:'🇨🇩'},{name:'Узбекистан',flag:'🇺🇿'},{name:'Колумбия',flag:'🇨🇴'}],
   L:[{name:'Англия',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},{name:'Хорватия',flag:'🇭🇷'},{name:'Гана',flag:'🇬🇭'},{name:'Панама',flag:'🇵🇦'}],
-  UCL:[],
 };
 
 // Verified schedule from FIFA/NBC Sports/MLS Soccer
@@ -268,7 +267,6 @@ const POR=[
 // tn = примечание если дата по МСК отличается от даты вкладки
 const SCH=[
   // ══ ТЕСТОВЫЕ МАТЧИ (удалить после проверки блокировки) ══
-  {d:'2026-05-30',h:'ПСЖ',a:'Арсенал',g:'UCL',t:'19:00',lbl:'Финал Лиги чемпионов УЕФА'},
   // ══ ГРУППОВОЙ ЭТАП ══
   // ── Тур 1 ──
   {d:'2026-06-11',h:'Мексика',a:'ЮАР',g:'A',t:'22:00'},
@@ -611,7 +609,7 @@ function setD(d) {
 }
 function rMBody() {
   const el = document.getElementById('mb'); if (!el) return;
-  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
+  const GRP = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const PO_LBL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curDate);
   if (!ms.length) { el.innerHTML = '<div class="empty"><div class="ei">📅</div><p>Нет матчей в этот день</p></div>'; return; }
@@ -707,7 +705,7 @@ function calcMatchPts(p, r) {
 
 function calcPts(predGroup) {
   let pts = 0, exact = 0, result = 0, predicted = 0, penalties = 0;
-  const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
+  const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   SCH.forEach((s, i) => {
     if (!GRP_IDS_C.includes(s.g) && !s.h) return; // skip TBD playoff matches
     const id = i + 1;
@@ -738,7 +736,7 @@ function rPredict() {
   if (session.isAdmin) { rPredictAdmin(); return; }
   // ── PLAYER VIEW ──
   const preds = myPreds.group || {};
-  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
+  const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const groupDates = [...new Set(SCH.filter(s => GRP_IDS_P.includes(s.g)).map(s => s.d))].sort();
   if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
   const st = calcPts(preds);
@@ -763,7 +761,7 @@ function rPredict() {
 
 function rPredictAdmin() {
   // ── ADMIN VIEW — выпадающий список игроков, только просмотр ──
-  const GRP_IDS_A = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
+  const GRP_IDS_A = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const groupDates = [...new Set(SCH.filter(s => GRP_IDS_A.includes(s.g)).map(s => s.d))].sort();
   if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
 
@@ -817,7 +815,7 @@ function rPredictAdmin() {
 
 function rPBodyAdminView() {
   const el = document.getElementById('pb'); if (!el) return;
-  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
+  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   const viewPreds = (allPreds[curViewUserId] && allPreds[curViewUserId].group) || {};
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 })).filter(s => s.d === curPredDate);
@@ -919,7 +917,7 @@ function predHL(p, r) {
 function rPBody() {
   const el = document.getElementById('pb'); if (!el) return;
   const preds = myPreds.group || {};
-  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L','UCL'];
+  const GRP_IDS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const PO_LABEL = {r32:'1/16 финала',r16:'1/8 финала',qf:'Четвертьфинал',sf:'Полуфинал','3rd':'За 3-е место',fin:'ФИНАЛ'};
   // Только групповой этап! Плей-офф идёт в rPBodyPO
   const ms = SCH.map((s, i) => ({ ...s, id: i + 1 }))
