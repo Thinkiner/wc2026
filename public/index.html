@@ -690,14 +690,13 @@ function calcMatchPts(p, r) {
   if (mr !== pr) return { pts: 0, type: 'miss' }; // не угадал исход
   // Угадал исход
   let pts = 2; // базовые 2 очка за исход/ничью
-  const diff = Math.abs(r.homeScore - r.awayScore);
-  const pdiff = Math.abs(p.h - p.a);
   if (p.h === r.homeScore && p.a === r.awayScore) {
     pts += 2; // +2 за точный счёт
     return { pts, type: 'exact' };
   }
-  if (Math.abs(diff - pdiff) === 1 && mr !== 0) {
-    pts += 1; // +1 за разницу в 1 гол
+  // +1 только если хотя бы один из голов совпадает точно
+  if (mr !== 0 && (p.h === r.homeScore || p.a === r.awayScore)) {
+    pts += 1; // +1 за совпадение одного гола при угаданном победителе
     return { pts, type: 'close' };
   }
   return { pts, type: 'result' };
