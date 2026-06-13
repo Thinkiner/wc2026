@@ -694,9 +694,12 @@ function calcMatchPts(p, r) {
     pts += 2; // +2 за точный счёт
     return { pts, type: 'exact' };
   }
-  // +1 только если хотя бы один из голов совпадает точно
-  if (mr !== 0 && (p.h === r.homeScore || p.a === r.awayScore)) {
-    pts += 1; // +1 за совпадение одного гола при угаданном победителе
+  // +1 если разница голов отличается ровно на 1 И хотя бы один гол совпадает точно
+  const diff = Math.abs(r.homeScore - r.awayScore);
+  const pdiff = Math.abs(p.h - p.a);
+  const oneGoalMatches = p.h === r.homeScore || p.a === r.awayScore;
+  if (mr !== 0 && Math.abs(diff - pdiff) === 1 && oneGoalMatches) {
+    pts += 1;
     return { pts, type: 'close' };
   }
   return { pts, type: 'result' };
