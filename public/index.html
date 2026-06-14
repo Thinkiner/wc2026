@@ -935,7 +935,7 @@ function rPBody() {
     const matchStarted = Date.now() >= matchStart.getTime();
     const locked = (!!r || matchStarted) && !session.isAdmin;
     const timeLabel = m.tn ? m.t + ' МСК<br><span style="font-size:9px;color:var(--muted)">ночью ' + m.tn + '</span>' : m.t + ' МСК';
-    const realInfo = r && session.isAdmin ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
     const inputArea = locked
       ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
       : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePred(${m.id},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePred(${m.id},'a',this.value)"></div>`;
