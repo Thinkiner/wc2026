@@ -725,7 +725,7 @@ function calcPts(predGroup) {
     pts += res.pts;
     if (res.type === 'exact') exact++;
     else if (res.type === 'result' || res.type === 'close') result++;
-    else if (res.type === 'penalty') penalties++;
+    else if (res.type === 'missed') penalties++;
   });
   return { pts, exact, result, predicted, penalties: 0 };
 }
@@ -834,7 +834,7 @@ function rPBodyAdminView() {
     const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
     const adminNoPred = r && !hasP;
     return `<div class="mc" style="${hl}">
-      <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${adminNoPred ? '<span style="font-size:10px;font-weight:700;color:#e74c3c;margin-left:4px">−1 штраф</span>' : lbl}</div>
+      <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${adminNoPred ? '<span style="font-size:10px;font-weight:700;color:var(--muted);margin-left:4px">0 промах</span>' : lbl}</div>
       <div style="flex:1">
         ${!isGroup && m.lbl ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${m.lbl}</div>` : ''}
         <div class="mts"><div class="mt">${th?th.flag:''} ${m.h||'TBD'}</div>${predDisp}<div class="mt r">${m.a||'TBD'} ${ta?ta.flag:''}</div></div>${realInfo}
@@ -909,7 +909,7 @@ function predHL(p, r) {
   if (res.type === 'exact') return { hl: 'border-color:#27ae60;background:rgba(39,174,96,.06)', lbl: `<span class="bdg bex">+${res.pts} точно ✓</span>` };
   if (res.type === 'close') return { hl: 'border-color:rgba(245,197,24,.5);background:rgba(245,197,24,.04)', lbl: `<span class="bdg brs">+${res.pts} исход+разница</span>` };
   if (res.type === 'result') return { hl: 'border-color:rgba(245,197,24,.3);background:rgba(245,197,24,.03)', lbl: `<span class="bdg brs">+${res.pts} исход</span>` };
-  if (res.type === 'penalty') return { hl: 'border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.04)', lbl: '<span style="font-size:10px;font-weight:700;color:#e74c3c">−1 штраф</span>' };
+  if (res.type === 'missed' || res.type === 'missed') return { hl: '', lbl: '<span style="font-size:10px;font-weight:700;color:var(--muted)">0 промах</span>' };
   return { hl: 'border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.04)', lbl: '<span style="font-size:10px;font-weight:700;color:#e74c3c">0 промах</span>' };
 }
 
