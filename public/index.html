@@ -684,7 +684,7 @@ function setScore(id, side, val) {
 // -1 очко — штраф за пропущенный прогноз (матч начался, прогноза нет)
 function calcMatchPts(p, r) {
   if (!r) return null; // матч ещё не сыгран
-  if (!p || p.h == null || p.a == null) return { pts: -1, type: 'penalty' }; // штраф
+  if (!p || p.h == null || p.a == null) return { pts: 0, type: 'missed' }; // промах без штрафа
   const mr = r.homeScore > r.awayScore ? 1 : r.homeScore < r.awayScore ? -1 : 0;
   const pr = p.h > p.a ? 1 : p.h < p.a ? -1 : 0;
   if (mr !== pr) return { pts: 0, type: 'miss' }; // не угадал исход
@@ -717,10 +717,7 @@ function calcPts(predGroup) {
     const r = results[id];
     if (!r) {
       // Матч не сыгран, но проверяем не начался ли (штраф)
-      const matchStart = new Date(s.d + 'T' + (s.t || '23:00') + ':00+03:00');
-      if (Date.now() >= matchStart.getTime() && !hp) {
-        pts -= 1; penalties++;
-      }
+      // штраф отменён — пропущенный прогноз = 0 баллов (промах)
       return;
     }
     const res = calcMatchPts(p, r);
@@ -730,7 +727,7 @@ function calcPts(predGroup) {
     else if (res.type === 'result' || res.type === 'close') result++;
     else if (res.type === 'penalty') penalties++;
   });
-  return { pts, exact, result, predicted, penalties };
+  return { pts, exact, result, predicted, penalties: 0 };
 }
 
 function rPredict() {
@@ -747,7 +744,7 @@ function rPredict() {
     <span style="font-size:12px;color:var(--muted)">⭐ <b style="color:var(--accent)">${st.pts} оч.</b></span>
     <span style="font-size:12px;color:var(--muted)">✓ точных: <b style="color:var(--green)">${st.exact}</b></span>
     <span style="font-size:12px;color:var(--muted)">≈ исход: <b style="color:var(--accent)">${st.result}</b></span>
-    ${st.penalties ? `<span style="font-size:12px;color:var(--muted)">⚠️ штрафов: <b style="color:#e74c3c">${st.penalties}</b></span>` : ''}
+
   </div>`;
   const subTabs = `<div class="stabs">
     <div class="stab${curPredTab === 'group' ? ' active' : ''}" onclick="curPredTab='group';rPredict()">🏟 Групповой этап</div>
@@ -939,9 +936,8 @@ function rPBody() {
     const inputArea = locked
       ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
       : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePred(${m.id},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePred(${m.id},'a',this.value)"></div>`;
-    const noPredPenalty = r && !session.isAdmin && (p.h == null || p.a == null);
     return `<div class="mc" style="${hl}">
-      <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${locked ? 'done' : r ? 'done' : 'up'}">${locked && !r ? '🔒 Начался' : r ? 'Сыгран' : 'Предстоит'}</span>${noPredPenalty ? '<span style="font-size:10px;font-weight:700;color:#e74c3c;margin-left:4px">−1 штраф</span>' : lbl}</div>
+      <div class="mm"><div class="mg">Гр. ${m.g}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${locked ? 'done' : r ? 'done' : 'up'}">${locked && !r ? '🔒 Начался' : r ? 'Сыгран' : 'Предстоит'}</span>${lbl}</div>
       <div style="flex:1">
         <div class="mts"><div class="mt">${th ? th.flag : ''} ${m.h}</div>${inputArea}<div class="mt r">${m.a} ${ta ? ta.flag : ''}</div></div>${realInfo}
       </div></div>`;
@@ -1165,7 +1161,7 @@ function rLB() {
             <li>За <b style="color:var(--green)">угаданного победителя или угаданную ничью</b> — <b style="color:var(--green)">2 балла</b>.</li>
             <li>За <b style="color:var(--green)">разницу в 1 гол при угаданном победителе</b> (напр., прогноз 0:2, результат 0:3, 1:2 или 0:1) — дополнительно <b style="color:var(--green)">+1 балл</b>.</li>
             <li>За <b style="color:var(--green)">точный счёт</b> — дополнительно <b style="color:var(--green)">+2 балла</b>.</li>
-            <li><b style="color:#e74c3c">Штраф</b> за неотправленный или отправленный после начала матча прогноз — <b style="color:#e74c3c">−1 балл</b>.</li>
+            <li>Если прогноз не успели прислать до начала матча, он считается как <b style="color:var(--text)">промах — 0 баллов</b>.</li>
             <li>В <b style="color:var(--text)">плей-офф</b> ничьи не учитываются — нужно выбрать победителя. Доп. очки за разницу и точный счёт присваиваются, кроме матчей с серией пенальти.</li>
             <li><b style="color:var(--accent)">Победитель</b> определяется наибольшей суммой баллов после финального матча.</li>
           </ol>
@@ -1182,7 +1178,7 @@ function rLB() {
           <div style="width:34px;height:34px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000;flex-shrink:0">${u.name[0]}</div>
           <div style="flex:1;min-width:0">
             <div style="font-weight:800;font-size:14px">${u.name}${isMe ? ' <span style="font-size:10px;color:var(--accent)">(вы)</span>' : ''}</div>
-            <div class="ldet"><span class="bdg bex">✓ ${u.exact}</span><span class="bdg brs">≈ ${u.result}</span><span style="font-size:10px;color:var(--muted)">📝 ${u.predicted}/${SCH.length}</span>${u.penalties ? `<span style="font-size:10px;color:#e74c3c;margin-left:4px">⚠️ -${u.penalties}</span>` : ''}</div>
+            <div class="ldet"><span class="bdg bex">✓ ${u.exact}</span><span class="bdg brs">≈ ${u.result}</span><span style="font-size:10px;color:var(--muted)">📝 ${u.predicted}/${SCH.length}</span></div>
           </div>
           <div class="lpts">${u.pts}<span style="font-size:13px;color:var(--muted);font-family:'Manrope',sans-serif;font-weight:400"> оч.</span></div>
         </div>`;
