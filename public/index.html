@@ -163,6 +163,13 @@ input[type=text]:focus,input[type=email]:focus,input[type=password]:focus{border
 #toast.show{opacity:1;transform:translateY(0);}
 .empty{text-align:center;padding:40px 16px;color:var(--muted);}
 .ei{font-size:36px;margin-bottom:8px;}
+/* Переключатель пенальти */
+.pen-sw{display:flex;align-items:center;gap:4px;margin-top:6px;justify-content:center;}
+.pen-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 8px;cursor:pointer;transition:all .15s;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+.pen-btn.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.pen-mid{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-weight:700;padding:4px 8px;cursor:pointer;transition:all .15s;}
+.pen-mid.active{background:var(--border);color:var(--text);border-color:var(--muted);}
+
 /* subtabs */
 .stabs{display:flex;gap:8px;margin-bottom:16px;}
 .stab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;}
@@ -634,19 +641,28 @@ function rMBody() {
         </div></div>`;
     } else {
       const roundLbl = PO_LBL[m.g] || m.g;
+      const hFlag2 = gFlag(m.h), aFlag2 = gFlag(m.a);
+      const penW = r ? r.penaltyWinner : null;
+      const penLabel = (r && r.homeScore === r.awayScore && penW)
+        ? `<div style="font-size:11px;color:var(--accent);text-align:center;margin-top:4px">🏆 по серии пенальти: <b>${penW}</b></div>` : '';
+      const penSwitch = `<div class="pen-sw">
+        <button class="pen-btn${penW===m.h?' active':''}" onclick="setPenaltyWinner(${m.id},'${m.h}')" title="Победа ${m.h} по пенальти"><b>${m.h||'?'}</b></button>
+        <button class="pen-mid${!penW?' active':''}" onclick="setPenaltyWinner(${m.id},null)">—</button>
+        <button class="pen-btn${penW===m.a?' active':''}" onclick="setPenaltyWinner(${m.id},'${m.a}')" title="Победа ${m.a} по пенальти"><b>${m.a||'?'}</b></button>
+      </div>`;
       return `<div class="mc" data-mid="${m.id}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLbl}</div><div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${ok?'done':'up'}">${ok?'✓ Сыгран':'Предстоит'}</span></div>
         <div style="flex:1">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-align:center">${m.lbl||''}</div>
           <div class="mts">
-            <div class="mt">${gFlag(m.h)} ${m.h||'TBD'}</div>
+            <div class="mt"><b>${hFlag2} ${m.h||'TBD'}</b></div>
             <div class="sw">
               <input class="si" type="number" min="0" max="30" value="${r?r.homeScore:''}" placeholder="–" oninput="setScore(${m.id},'home',this.value)">
               <span class="sep">:</span>
               <input class="si" type="number" min="0" max="30" value="${r?r.awayScore:''}" placeholder="–" oninput="setScore(${m.id},'away',this.value)">
             </div>
-            <div class="mt r">${m.a||'TBD'} ${gFlag(m.a)}</div>
+            <div class="mt r"><b>${m.a||'TBD'} ${aFlag2}</b></div>
           </div>
+          ${penLabel}${penSwitch}
         </div></div>`;
     }
   }).join('');
@@ -655,25 +671,38 @@ function rMBody() {
 // Дебаунс — отправляем на сервер через 800мс после последнего нажатия
 const scoreTimers = {};
 function setScore(id, side, val) {
-  if (!results[id]) results[id] = { homeScore: null, awayScore: null };
+  if (!results[id]) results[id] = { homeScore: null, awayScore: null, penaltyWinner: null };
   const v = val === '' ? null : Math.max(0, parseInt(val) || 0);
   results[id][side === 'home' ? 'homeScore' : 'awayScore'] = v;
-  // Обновляем бейдж сразу
   const card = document.querySelector(`[data-mid="${id}"]`);
   if (card) {
     const r = results[id]; const ok = r.homeScore !== null && r.awayScore !== null;
     const b = card.querySelector('.sb');
     if (b) { b.className = 'sb ' + (ok ? 'done' : 'up'); b.textContent = ok ? '✓ Сыгран' : 'Предстоит'; }
   }
-  // Сохраняем на сервер с задержкой
   clearTimeout(scoreTimers[id]);
   scoreTimers[id] = setTimeout(async () => {
     const r = results[id];
     if (r.homeScore !== null && r.awayScore !== null) {
-      try { await apiSaveResult(id, r.homeScore, r.awayScore); }
+      try { await apiSaveResult(id, r.homeScore, r.awayScore, r.penaltyWinner || null); }
       catch (e) { toast('Ошибка сохранения: ' + e.message, true); }
     }
   }, 800);
+}
+
+function setPenaltyWinner(id, winner) {
+  if (!results[id]) results[id] = { homeScore: null, awayScore: null, penaltyWinner: null };
+  results[id].penaltyWinner = results[id].penaltyWinner === winner ? null : winner;
+  // Перерисовываем только эту карточку
+  rMBody();
+  clearTimeout(scoreTimers['pen_' + id]);
+  scoreTimers['pen_' + id] = setTimeout(async () => {
+    const r = results[id];
+    if (r.homeScore !== null && r.awayScore !== null) {
+      try { await apiSaveResult(id, r.homeScore, r.awayScore, r.penaltyWinner || null); }
+      catch (e) { toast('Ошибка сохранения: ' + e.message, true); }
+    }
+  }, 500);
 }
 
 // ── PREDICT ──────────────────────────────────────
@@ -831,7 +860,8 @@ function rPBodyAdminView() {
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
       : `<div class="sdisp"><div class="sbox" style="color:var(--muted);font-size:12px">нет</div></div>`;
-    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
+    const penNote = (r && r.penaltyWinner) ? ` (по серии пенальти: ${r.penaltyWinner})` : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b>${penNote}</div>` : '';
     const adminNoPred = r && !hasP;
     return `<div class="mc" style="${hl}">
       <div class="mm"><div class="mg" style="font-size:${isGroup?'11px':'10px'}">${metaLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r ? 'done' : 'up'}">${r ? 'Сыгран' : 'Предстоит'}</span>${adminNoPred ? '<span style="font-size:10px;font-weight:700;color:var(--muted);margin-left:4px">0 промах</span>' : lbl}</div>
@@ -888,7 +918,7 @@ function rPBodyPOAdminView() {
     } else {
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt">${hFlag} ${home}</div>${predDisp}<div class="mt r">${away} ${aFlag}</div></div></div></div>`;
+        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div></div></div>`;
     }
   });
 
@@ -932,7 +962,8 @@ function rPBody() {
     const matchStarted = Date.now() >= matchStart.getTime();
     const locked = (!!r || matchStarted) && !session.isAdmin;
     const timeLabel = m.tn ? m.t + ' МСК<br><span style="font-size:9px;color:var(--muted)">ночью ' + m.tn + '</span>' : m.t + ' МСК';
-    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
+    const penNote = (r && r.penaltyWinner) ? ` (по серии пенальти: ${r.penaltyWinner})` : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b>${penNote}</div>` : '';
     const inputArea = locked
       ? `<div class="sdisp"><div class="sbox${p.h != null ? ' has' : ''}">${p.h != null ? p.h : '–'}</div><span class="sep">:</span><div class="sbox${p.a != null ? ' has' : ''}">${p.a != null ? p.a : '–'}</div></div>`
       : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h != null ? p.h : ''}" placeholder="–" oninput="savePred(${m.id},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a != null ? p.a : ''}" placeholder="–" oninput="savePred(${m.id},'a',this.value)"></div>`;
@@ -968,11 +999,10 @@ function rPBodyPO() {
 
   ms.forEach(sch => {
     const srv = (playoffState[sch._roundId] || [])[sch._idx];
+    const home = (srv && srv.home) ? srv.home : '';
+    const away = (srv && srv.away) ? srv.away : '';
     const homeScore = srv ? srv.homeScore : null;
     const awayScore = srv ? srv.awayScore : null;
-    // Берём команды из SCH (уже заполнены) или из playoffState
-    const home = (srv && srv.home) ? srv.home : (sch.h || '');
-    const away = (srv && srv.away) ? srv.away : (sch.a || '');
     const key = sch._roundId + '_' + sch._idx;
     const p = poPreds[key] || {};
     const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore } : null;
@@ -984,21 +1014,18 @@ function rPBodyPO() {
       : sch.t + ' МСК';
     const hFlag = gFlag(home), aFlag = gFlag(away);
     const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
-    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>` : '';
 
     if (!home && !away) {
-      // Команды ещё не определены — показываем TBD без полей ввода
-      html += `<div class="mc">
-        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span></div>
-        <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">Команды определятся позже</div></div></div>`;
+      html += `<div class="mc" style="${hl}">
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
+        <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${sch.lbl||'Команды определятся позже'}</div></div></div>`;
     } else {
-      // Команды известны — показываем поля ввода
       const inputArea = locked
         ? `<div class="sdisp"><div class="sbox${p.h!=null?' has':''}">${p.h!=null?p.h:'–'}</div><span class="sep">:</span><div class="sbox${p.a!=null?' has':''}">${p.a!=null?p.a:'–'}</div></div>`
         : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h!=null?p.h:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a!=null?p.a:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'a',this.value)"></div>`;
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1"><div class="mts"><div class="mt">${hFlag} ${home}</div>${inputArea}<div class="mt r">${away} ${aFlag}</div></div>${realInfo}</div></div>`;
+        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${inputArea}<div class="mt r"><b>${away} ${aFlag}</b></div></div></div></div>`;
     }
   });
 
