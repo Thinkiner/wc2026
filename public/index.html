@@ -107,7 +107,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 .bt{display:flex;align-items:center;gap:5px;padding:7px 9px;font-size:11px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .bt:last-child{border-bottom:none;}
 .bt:hover{background:rgba(245,197,24,.08);}
-.bt.win{background:rgba(245,197,24,.08);color:#ffffff;font-weight:800;}
+.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;}
 .bt.lose{opacity:.35;}
 .bt.tbd{color:var(--muted);}
 .bt.ro{cursor:default;}.bt.ro:hover{background:none;}
@@ -892,7 +892,7 @@ function rPBodyPOAdminView() {
 
   const poDates = [...new Set(allPO.map(m => m.d))].sort();
   if (!poDates.length) { el.innerHTML = '<div class="empty"><div class="ei">⏳</div><p>Матчи плей-офф не найдены</p></div>'; return; }
-  if (!window.curPODate || !poDates.includes(window.curPODate)) window.curPODate = poDates[0];
+  if (!window.curPODate || !poDates.includes(window.curPODate)) window.curPODate = nearestPODate(poDates);
 
   const ms = allPO.filter(m => m.d === window.curPODate);
 
@@ -918,16 +918,13 @@ function rPBodyPOAdminView() {
       ? sch.t + ' МСК<br><span style="font-size:9px;color:var(--muted)">ночью ' + sch.tn + '</span>'
       : sch.t + ' МСК';
     const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
-    // Матч начался по времени? (для статуса, админ всегда видит)
-    const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
-    const started = Date.now() >= matchStart.getTime();
     if (!home && !away) {
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
         <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${sch.lbl||'TBD'}</div>${predDisp}</div></div>`;
     } else {
       html += `<div class="mc" style="${hl}">
-        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${started||r?'done':'up'}">${r?'Сыгран':started?'🔒 Начался':'Предстоит'}</span>${lbl}</div>
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
         <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div></div></div>`;
     }
   });
@@ -985,6 +982,20 @@ function rPBody() {
   }).join('');
 }
 
+// Выбирает дату ближайшую к сегодня (сегодня или следующую будущую, иначе последнюю)
+function nearestPODate(dates) {
+  if (!dates.length) return null;
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  // Точное совпадение с сегодня
+  if (dates.includes(todayStr)) return todayStr;
+  // Первая будущая дата
+  const future = dates.filter(d => d >= todayStr).sort();
+  if (future.length) return future[0];
+  // Иначе последняя прошедшая
+  return dates[dates.length - 1];
+}
+
 function rPBodyPO() {
   const el = document.getElementById('pb-po'); if (!el) return;
   const poPreds = myPreds.playoff || {};
@@ -1001,7 +1012,7 @@ function rPBodyPO() {
   // Уникальные даты
   const poDates = [...new Set(allPO.map(m => m.d))].sort();
   if (!poDates.length) { el.innerHTML = '<div class="empty"><div class="ei">⏳</div><p>Матчи плей-офф не найдены</p></div>'; return; }
-  if (!window.curPODate || !poDates.includes(window.curPODate)) window.curPODate = poDates[0];
+  if (!window.curPODate || !poDates.includes(window.curPODate)) window.curPODate = nearestPODate(poDates);
 
   const ms = allPO.filter(m => m.d === window.curPODate);
 
@@ -1009,16 +1020,15 @@ function rPBodyPO() {
 
   ms.forEach(sch => {
     const srv = (playoffState[sch._roundId] || [])[sch._idx];
+    const homeScore = srv ? srv.homeScore : null;
+    const awayScore = srv ? srv.awayScore : null;
     const penaltyWinner = srv ? srv.penaltyWinner : null;
     // Берём команды из SCH (уже заполнены) или из playoffState
-    const home = sch.h || (srv && srv.home) || '';
-    const away = sch.a || (srv && srv.away) || '';
+    const home = (srv && srv.home) ? srv.home : (sch.h || '');
+    const away = (srv && srv.away) ? srv.away : (sch.a || '');
     const key = sch._roundId + '_' + sch._idx;
     const p = poPreds[key] || {};
-    // Результат: сначала из match_results по match_id (sch.id), потом из playoffState
-    const rFromSrv = (srv && srv.homeScore != null && srv.awayScore != null)
-      ? { homeScore: srv.homeScore, awayScore: srv.awayScore, penaltyWinner } : null;
-    const r = results[sch.id] ? { ...results[sch.id], penaltyWinner } : rFromSrv;
+    const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore, penaltyWinner } : null;
     const { hl, lbl } = predHL(p, r);
     const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
     const locked = (!!r || Date.now() >= matchStart.getTime()) && !session.isAdmin;
@@ -1039,7 +1049,7 @@ function rPBodyPO() {
         ? `<div class="sdisp"><div class="sbox${p.h!=null?' has':''}">${p.h!=null?p.h:'–'}</div><span class="sep">:</span><div class="sbox${p.a!=null?' has':''}">${p.a!=null?p.a:'–'}</div></div>`
         : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h!=null?p.h:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a!=null?p.a:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'a',this.value)"></div>`;
       html += `<div class="mc" style="${hl}">
-        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${locked||r?'done':'up'}">${locked&&!r?'🔒 Начался':r?'Сыгран':'Предстоит'}</span>${lbl}</div>
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
         <div style="flex:1"><div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${inputArea}<div class="mt r"><b>${away} ${aFlag}</b></div></div>${realInfo}</div></div>`;
     }
   });
@@ -1083,7 +1093,7 @@ function savePredPO(roundId, idx, side, val) {
 function fmtBracketDate(iso) {
   if (!iso) return '';
   const d = new Date(iso + 'T12:00:00');
-  return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0');
+  return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getFullYear()).slice(2);
 }
 
 function scrollActiveTab(tabsEl) {
@@ -1118,41 +1128,25 @@ function rBracket() {
     const body = document.createElement('div'); body.className = 'bbody';
     slots.forEach((m, idx) => {
       if (!m) m = { home:'', away:'', homeScore:null, awayScore:null, winner:null };
-      // Команды из SCH если playoffState пустой
-      const schSlot = schSlots[idx];
-      if (!m.home && schSlot && schSlot.h) m.home = schSlot.h;
-      if (!m.away && schSlot && schSlot.a) m.away = schSlot.a;
       const hOk = m.home !== '', aOk = m.away !== '';
-      // Результат из match_results по match_id
-      const matchRes = schSlot ? results[schSlot.id] : null;
-      const hScore = matchRes ? matchRes.homeScore : m.homeScore;
-      const aScore = matchRes ? matchRes.awayScore : m.awayScore;
-      // Победитель: автоматически по счёту или из winner
-      const autoWinner = (hScore != null && aScore != null)
-        ? (hScore > aScore ? m.home : hScore < aScore ? m.away : m.winner)
-        : m.winner;
-      const hW = autoWinner === m.home && hOk;
-      const aW = autoWinner === m.away && aOk;
+      const hW = m.winner === m.home && hOk, aW = m.winner === m.away && aOk;
       const bm = document.createElement('div'); bm.className = 'bm';
-      const blockDate = schSlot ? fmtBracketDate(schSlot.d) : (m._d ? fmtBracketDate(m._d) : '');
-      const blockTime = schSlot ? schSlot.t : m._t;
       if (!hOk && !aOk) {
-        // TBD match — label, date, time
+        // TBD match — show label and time
         bm.innerHTML = `<div class="bt tbd ro" style="justify-content:center;text-align:center;padding:9px 6px;flex-direction:column;gap:3px;cursor:default">
           <span style="font-size:11px">${m._lbl||'TBD'}</span>
-          ${blockDate ? `<span style="font-size:10px;color:var(--muted)">${blockDate}</span>` : ''}
-          ${blockTime ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${blockTime}</span>` : ''}
+          ${m._d ? `<span style="font-size:10px;color:var(--muted)">${fmtBracketDate(m._d)}</span>` : ''}
+          ${m._t ? `<span style="font-size:10px;color:var(--accent);font-weight:700">${m._t}</span>` : ''}
         </div>`;
       } else {
-        const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${(matchRes?matchRes.homeScore:m.homeScore)!=null?(matchRes?matchRes.homeScore:m.homeScore):''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (hScore!=null?`<span style="margin-left:auto;font-family:'Playfair Display',serif;font-size:13px;color:var(--accent)">${hScore}</span>`:'');
-        const sA = isA ? `<input class="bsi" type="number" min="0" max="30" value="${(matchRes?matchRes.awayScore:m.awayScore)!=null?(matchRes?matchRes.awayScore:m.awayScore):''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'away',this.value)">` : (aScore!=null?`<span style="margin-left:auto;font-family:'Playfair Display',serif;font-size:13px;color:var(--accent)">${aScore}</span>`:'');
-        const dateBar = (blockDate || blockTime) ? `<div style="text-align:center;padding:3px 6px;border-bottom:1px solid var(--border);font-size:9px;color:var(--muted)">${blockDate}${blockDate&&blockTime?' · ':''}${blockTime||''} МСК</div>` : '';
-        bm.innerHTML = `${dateBar}
+        const sH = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.homeScore!=null?m.homeScore:''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'home',this.value)">` : (m.homeScore!=null?`<span style="margin-left:auto;font-family:'Playfair Display',serif;font-size:13px;color:var(--accent)">${m.homeScore}</span>`:'');
+        const sA = isA ? `<input class="bsi" type="number" min="0" max="30" value="${m.awayScore!=null?m.awayScore:''}" placeholder="–" onclick="event.stopPropagation()" oninput="setPOSc('${round.id}',${idx},'away',this.value)">` : (m.awayScore!=null?`<span style="margin-left:auto;font-family:'Playfair Display',serif;font-size:13px;color:var(--accent)">${m.awayScore}</span>`:'');
+        bm.innerHTML = `
           <div class="bt ${hW?'win':aW&&hOk?'lose':''}${!isA?' ro':''}" ${isA?`onclick="pickW('${round.id}',${idx},'home')"`:''}>
-            <span class="bfl">${hOk?(gFlag(m.home)||'🏳️'):''}</span><span style="${hW?'color:#fff;font-weight:800':''}">${m.home||'—'}</span>${sH}
+            <span class="bfl">${hOk?(gFlag(m.home)||'🏳️'):''}</span><span>${m.home||'—'}</span>${sH}
           </div>
           <div class="bt ${aW?'win':hW&&aOk?'lose':''}${!isA?' ro':''}" ${isA?`onclick="pickW('${round.id}',${idx},'away')"`:''}>
-            <span class="bfl">${aOk?(gFlag(m.away)||'🏳️'):''}</span><span style="${aW?'color:#fff;font-weight:800':''}">${m.away||'—'}</span>${sA}
+            <span class="bfl">${aOk?(gFlag(m.away)||'🏳️'):''}</span><span>${m.away||'—'}</span>${sA}
           </div>`;
       }
       body.appendChild(bm);
