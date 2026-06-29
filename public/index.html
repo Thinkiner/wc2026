@@ -900,15 +900,16 @@ function rPBodyPOAdminView() {
 
   ms.forEach(sch => {
     const srv = (playoffState[sch._roundId] || [])[sch._idx];
-    const home = (srv && srv.home) ? srv.home : '';
-    const away = (srv && srv.away) ? srv.away : '';
-    const homeScore = srv ? srv.homeScore : null;
-    const awayScore = srv ? srv.awayScore : null;
+    // Команды: из SCH если заполнены, иначе из playoffState
+    const home = sch.h || (srv && srv.home) || '';
+    const away = sch.a || (srv && srv.away) || '';
     const key = sch._roundId + '_' + sch._idx;
     const p = poPreds[key];
     const hasP = p && p.h != null && p.a != null;
-    const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore } : null;
-    const { hl, lbl } = predHL(hasP ? p : null, r);
+    // Результат: сначала из match_results по match_id, потом из playoffState
+    const r = results[sch.id] || ((srv && srv.homeScore != null && srv.awayScore != null)
+      ? { homeScore: srv.homeScore, awayScore: srv.awayScore } : null);
+        const { hl, lbl } = predHL(hasP ? p : null, r);
     const hFlag = gFlag(home), aFlag = gFlag(away);
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
