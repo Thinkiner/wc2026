@@ -107,7 +107,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 .bt{display:flex;align-items:center;gap:5px;padding:7px 9px;font-size:11px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .bt:last-child{border-bottom:none;}
 .bt:hover{background:rgba(245,197,24,.08);}
-.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;}
+.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;} .bt.lose{opacity:.4;font-weight:400;}
 .bt.lose{opacity:.35;}
 .bt.tbd{color:var(--muted);}
 .bt.ro{cursor:default;}.bt.ro:hover{background:none;}
@@ -925,7 +925,11 @@ function rPBodyPOAdminView() {
     } else {
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div></div></div>`;
+        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts">
+            <div class="mt" style="${r && r.homeScore > r.awayScore ? 'font-weight:800;color:var(--text)' : r && r.homeScore < r.awayScore ? 'opacity:0.5' : ''}">${hFlag} ${home}</div>
+            ${predDisp}
+            <div class="mt r" style="${r && r.awayScore > r.homeScore ? 'font-weight:800;color:var(--text)' : r && r.awayScore < r.homeScore ? 'opacity:0.5' : ''}">${away} ${aFlag}</div>
+          </div></div></div>`;
     }
   });
 
@@ -1037,7 +1041,11 @@ function rPBodyPO() {
         : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h!=null?p.h:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a!=null?p.a:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'a',this.value)"></div>`;
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1"><div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${inputArea}<div class="mt r"><b>${away} ${aFlag}</b></div></div>${realInfo}</div></div>`;
+        <div style="flex:1"><div class="mts">
+            <div class="mt" style="${r && r.homeScore > r.awayScore ? 'font-weight:800;color:var(--text)' : r && r.homeScore < r.awayScore ? 'opacity:0.5' : ''}">${hFlag} ${home}</div>
+            ${inputArea}
+            <div class="mt r" style="${r && r.awayScore > r.homeScore ? 'font-weight:800;color:var(--text)' : r && r.awayScore < r.homeScore ? 'opacity:0.5' : ''}">${away} ${aFlag}</div>
+          </div>${realInfo}</div></div>`;
     }
   });
 
