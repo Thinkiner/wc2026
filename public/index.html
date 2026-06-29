@@ -107,7 +107,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 .bt{display:flex;align-items:center;gap:5px;padding:7px 9px;font-size:11px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .bt:last-child{border-bottom:none;}
 .bt:hover{background:rgba(245,197,24,.08);}
-.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;}
+.bt.win{background:rgba(245,197,24,.08);color:#ffffff;font-weight:800;}
 .bt.lose{opacity:.35;}
 .bt.tbd{color:var(--muted);}
 .bt.ro{cursor:default;}.bt.ro:hover{background:none;}
@@ -1123,10 +1123,18 @@ function rBracket() {
     const body = document.createElement('div'); body.className = 'bbody';
     slots.forEach((m, idx) => {
       if (!m) m = { home:'', away:'', homeScore:null, awayScore:null, winner:null };
+      // Берём команды из SCH если playoffState пустой
+      const schSlot = SCH.map((s,i)=>({...s,id:i+1})).filter(s=>s.g===round.id)[idx];
+      if (!m.home && schSlot && schSlot.h) m.home = schSlot.h;
+      if (!m.away && schSlot && schSlot.a) m.away = schSlot.a;
       const hOk = m.home !== '', aOk = m.away !== '';
-      // Победитель: из playoffState.winner или автоматически по счёту
-      const autoWinner = (m.homeScore != null && m.awayScore != null)
-        ? (m.homeScore > m.awayScore ? m.home : m.homeScore < m.awayScore ? m.away : m.winner)
+      // Результат из match_results по match_id
+      const matchResult = schSlot ? results[schSlot.id] : null;
+      const homeScore = matchResult ? matchResult.homeScore : m.homeScore;
+      const awayScore = matchResult ? matchResult.awayScore : m.awayScore;
+      // Победитель по счёту
+      const autoWinner = (homeScore != null && awayScore != null)
+        ? (homeScore > awayScore ? m.home : homeScore < awayScore ? m.away : m.winner)
         : m.winner;
       const hW = (autoWinner === m.home) && hOk;
       const aW = (autoWinner === m.away) && aOk;
