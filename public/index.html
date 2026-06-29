@@ -600,7 +600,7 @@ function rGroups() {
 // ── ADMIN: MATCHES ────────────────────────────────
 function rMatches() {
   const dates = [...new Set(SCH.map(s => s.d))].sort();
-  if (!curDate || !dates.includes(curDate)) curDate = dates[0];
+  if (!curDate || !dates.includes(curDate)) curDate = nearestPODate(dates);
   const done = Object.keys(results).length;
   document.getElementById('page-matches').innerHTML =
     `<div class="stitle">Матчи</div>
@@ -920,6 +920,8 @@ function rPBodyPOAdminView() {
     const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
     const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
     const started = Date.now() >= matchStart.getTime();
+    const penNote = (r && r.penaltyWinner) ? ` (по пенальти: ${r.penaltyWinner})` : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b>${penNote}</div>` : '';
     if (!home && !away) {
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
@@ -927,7 +929,7 @@ function rPBodyPOAdminView() {
     } else {
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${started||r?'done':'up'}">${r?'Сыгран':started?'🔒 Начался':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div></div></div>`;
+        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div>${realInfo}</div></div>`;
     }
   });
 
