@@ -107,7 +107,7 @@ main{max-width:1140px;margin:0 auto;padding:24px 14px 70px;}
 .bt{display:flex;align-items:center;gap:5px;padding:7px 9px;font-size:11px;font-weight:600;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
 .bt:last-child{border-bottom:none;}
 .bt:hover{background:rgba(245,197,24,.08);}
-.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;} .bt.lose{opacity:.4;font-weight:400;}
+.bt.win{background:rgba(245,197,24,.13);color:var(--accent);font-weight:800;}
 .bt.lose{opacity:.35;}
 .bt.tbd{color:var(--muted);}
 .bt.ro{cursor:default;}.bt.ro:hover{background:none;}
@@ -1124,7 +1124,12 @@ function rBracket() {
     slots.forEach((m, idx) => {
       if (!m) m = { home:'', away:'', homeScore:null, awayScore:null, winner:null };
       const hOk = m.home !== '', aOk = m.away !== '';
-      const hW = m.winner === m.home && hOk, aW = m.winner === m.away && aOk;
+      // Победитель: из playoffState.winner или автоматически по счёту
+      const autoWinner = (m.homeScore != null && m.awayScore != null)
+        ? (m.homeScore > m.awayScore ? m.home : m.homeScore < m.awayScore ? m.away : m.winner)
+        : m.winner;
+      const hW = (autoWinner === m.home) && hOk;
+      const aW = (autoWinner === m.away) && aOk;
       const bm = document.createElement('div'); bm.className = 'bm';
       if (!hOk && !aOk) {
         // TBD match — show label and time
