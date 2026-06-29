@@ -734,13 +734,19 @@ function calcMatchPts(p, r) {
   return { pts, type: 'result' };
 }
 
-function calcPts(predGroup) {
+function calcPts(predGroup, predPlayoff) {
+  predPlayoff = predPlayoff || {};
   let pts = 0, exact = 0, result = 0, predicted = 0, penalties = 0;
   const GRP_IDS_C = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const PO_IDS_C = ['r32','r16','qf','sf','3rd','fin','UCL'];
   SCH.forEach((s, i) => {
-    if (!GRP_IDS_C.includes(s.g) && !s.h) return; // skip TBD playoff matches
+    // Пропускаем плей-офф матчи без команд (TBD)
+    if (!GRP_IDS_C.includes(s.g) && PO_IDS_C.includes(s.g) && !s.h) return;
     const id = i + 1;
-    const p = predGroup[id];
+    // Для плей-офф прогноз берём из poPreds, для группового — из predGroup
+    const isGroupMatch = GRP_IDS_C.includes(s.g);
+    const poKey = s.g + '_' + (PO_IDS_C.includes(s.g) ? SCH.slice(0,i).filter(x=>x.g===s.g).length : 0);
+    const p = isGroupMatch ? predGroup[id] : predPlayoff[poKey];
     const hp = p && p.h != null && p.a != null;
     if (hp) predicted++;
     const r = results[id];
@@ -767,7 +773,7 @@ function rPredict() {
   const GRP_IDS_P = ['A','B','C','D','E','F','G','H','I','J','K','L'];
   const groupDates = [...new Set(SCH.filter(s => GRP_IDS_P.includes(s.g)).map(s => s.d))].sort();
   if (!curPredDate || !groupDates.includes(curPredDate)) curPredDate = groupDates[0];
-  const st = calcPts(preds);
+  const st = calcPts(preds, myPreds.playoff || {});
   const statsBar = `<div style="display:flex;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 16px;margin-bottom:14px;">
     <span style="font-size:12px;color:var(--muted)">📝 <b style="color:var(--text)">${st.predicted}/${SCH.length}</b></span>
     <span style="font-size:12px;color:var(--muted)">⭐ <b style="color:var(--accent)">${st.pts} оч.</b></span>
@@ -810,7 +816,7 @@ function rPredictAdmin() {
           </select>
         </div>
         ${curViewUserId ? (() => {
-          const st = calcPts((allPreds[curViewUserId]||{}).group||{});
+          const st = calcPts((allPreds[curViewUserId]||{}).group||{}, (allPreds[curViewUserId]||{}).playoff||{});
           return `<div style="display:flex;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-size:12px;">
             <span style="color:var(--muted)">⭐ <b style="color:var(--accent)">${st.pts} оч.</b></span>
             <span style="color:var(--muted)">✓ точных: <b style="color:var(--green)">${st.exact}</b></span>
@@ -1176,7 +1182,7 @@ function rLB() {
   const el = document.getElementById('page-leaderboard');
   // Для каждого пользователя считаем очки
   const scored = Object.entries(allPreds).map(([uid, data]) => {
-    const s = calcPts(data.group || {});
+    const s = calcPts(data.group || {}, data.playoff || {});
     return { uid, name: data.name, color: data.color, ...s };
   }).sort((a, b) => b.pts - a.pts || b.exact - a.exact);
   // Если игрок — добавляем себя если нет в allPreds (пустой прогноз)
