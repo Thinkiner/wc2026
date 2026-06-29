@@ -999,13 +999,15 @@ function rPBodyPO() {
 
   ms.forEach(sch => {
     const srv = (playoffState[sch._roundId] || [])[sch._idx];
-    const home = (srv && srv.home) ? srv.home : '';
-    const away = (srv && srv.away) ? srv.away : '';
     const homeScore = srv ? srv.homeScore : null;
     const awayScore = srv ? srv.awayScore : null;
+    const penaltyWinner = srv ? srv.penaltyWinner : null;
+    // Берём команды из SCH (уже заполнены) или из playoffState
+    const home = (srv && srv.home) ? srv.home : (sch.h || '');
+    const away = (srv && srv.away) ? srv.away : (sch.a || '');
     const key = sch._roundId + '_' + sch._idx;
     const p = poPreds[key] || {};
-    const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore } : null;
+    const r = (homeScore != null && awayScore != null) ? { homeScore, awayScore, penaltyWinner } : null;
     const { hl, lbl } = predHL(p, r);
     const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
     const locked = (!!r || Date.now() >= matchStart.getTime()) && !session.isAdmin;
@@ -1014,18 +1016,20 @@ function rPBodyPO() {
       : sch.t + ' МСК';
     const hFlag = gFlag(home), aFlag = gFlag(away);
     const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
+    const penNote = (r && r.penaltyWinner) ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:2px">🏆 по пенальти: <b style="color:var(--text)">${r.penaltyWinner}</b></div>` : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>${penNote}` : '';
 
     if (!home && !away) {
-      html += `<div class="mc" style="${hl}">
-        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span>${lbl}</div>
-        <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">${sch.lbl||'Команды определятся позже'}</div></div></div>`;
+      html += `<div class="mc">
+        <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb up">Предстоит</span></div>
+        <div style="flex:1"><div style="font-size:12px;color:var(--muted);padding:8px 0;text-align:center">Команды определятся позже</div></div></div>`;
     } else {
       const inputArea = locked
         ? `<div class="sdisp"><div class="sbox${p.h!=null?' has':''}">${p.h!=null?p.h:'–'}</div><span class="sep">:</span><div class="sbox${p.a!=null?' has':''}">${p.a!=null?p.a:'–'}</div></div>`
         : `<div class="sw"><input class="si" type="number" min="0" max="30" value="${p.h!=null?p.h:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'h',this.value)"><span class="sep">:</span><input class="si" type="number" min="0" max="30" value="${p.a!=null?p.a:''}" placeholder="–" oninput="savePredPO('${sch._roundId}',${sch._idx},'a',this.value)"></div>`;
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${r?'done':'up'}">${r?'Сыгран':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${inputArea}<div class="mt r"><b>${away} ${aFlag}</b></div></div></div></div>`;
+        <div style="flex:1"><div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${inputArea}<div class="mt r"><b>${away} ${aFlag}</b></div></div>${realInfo}</div></div>`;
     }
   });
 
