@@ -99,10 +99,10 @@ async function apiGetResults() {
   return apiFetch('/matches/results');
 }
 
-async function apiSaveResult(matchId, homeScore, awayScore) {
+async function apiSaveResult(matchId, homeScore, awayScore, penaltyWinner) {
   return apiFetch('/matches/results', {
     method: 'POST',
-    body: { matchId, homeScore, awayScore },
+    body: { matchId, homeScore, awayScore, penaltyWinner: penaltyWinner || null },
   });
 }
 
