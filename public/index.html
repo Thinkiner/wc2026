@@ -714,9 +714,23 @@ function setPenaltyWinner(id, winner) {
 function calcMatchPts(p, r) {
   if (!r) return null; // матч ещё не сыгран
   if (!p || p.h == null || p.a == null) return { pts: 0, type: 'missed' }; // промах без штрафа
-  const mr = r.homeScore > r.awayScore ? 1 : r.homeScore < r.awayScore ? -1 : 0;
+  let mr = r.homeScore > r.awayScore ? 1 : r.homeScore < r.awayScore ? -1 : 0;
   const pr = p.h > p.a ? 1 : p.h < p.a ? -1 : 0;
+  // Плей-офф с серией пенальти: при ничьей в основное время исход определяет победитель пенальти
+  if (mr === 0 && r.penaltyWinner) {
+    // Определяем кого выбрал игрок как победителя и совпал ли он с победителем пенальти
+    // pr показывает направление прогноза игрока; для ничьей в прогнозе (pr===0) — не угадал
+    // Победитель пенальти соответствует домашней (1) или гостевой (-1) команде
+    // Это вычисляется в вызывающем коде через сравнение имён; здесь упрощаем по флагу
+    // mr выставляем по penaltyWinner ниже через poWinnerSide
+    if (r.poWinnerSide) mr = r.poWinnerSide;
+  }
   if (mr !== pr) return { pts: 0, type: 'miss' }; // не угадал исход
+  // Матч решён серией пенальти: ровно 2 очка за угаданного победителя
+  // (точный счёт и бонус не начисляются — основное время ничейное)
+  if (r.penaltyWinner && r.homeScore === r.awayScore) {
+    return { pts: 2, type: 'result' };
+  }
   // Угадал исход
   let pts = 2; // базовые 2 очка за исход/ничью
   if (p.h === r.homeScore && p.a === r.awayScore) {
@@ -755,7 +769,14 @@ function calcPts(predGroup, predPlayoff) {
       // штраф отменён — пропущенный прогноз = 0 баллов (промах)
       return;
     }
-    const res = calcMatchPts(p, r);
+    // Для плей-офф с пенальти: определяем сторону победителя (1=дом, -1=гость)
+    let rForCalc = r;
+    if (r.penaltyWinner && r.homeScore === r.awayScore) {
+      const homeTeam = s.h, awayTeam = s.a;
+      const side = r.penaltyWinner === homeTeam ? 1 : r.penaltyWinner === awayTeam ? -1 : 0;
+      rForCalc = { ...r, poWinnerSide: side };
+    }
+    const res = calcMatchPts(p, rForCalc);
     if (!res) return;
     pts += res.pts;
     if (res.type === 'exact') exact++;
