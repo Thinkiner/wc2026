@@ -920,7 +920,7 @@ function rPBodyPOAdminView() {
     const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
     const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
     const started = Date.now() >= matchStart.getTime();
-    const penNote = (r && r.penaltyWinner) ? ` (по пенальти: ${r.penaltyWinner})` : '';
+    const penNote = (r && r.penaltyWinner) ? ` 🏆 по серии пенальти: <b style="color:var(--text)">${r.penaltyWinner}</b>` : '';
     const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b>${penNote}</div>` : '';
     if (!home && !away) {
       html += `<div class="mc" style="${hl}">
@@ -1033,7 +1033,7 @@ function rPBodyPO() {
     // Результат: сначала из match_results по match_id (sch.id), потом из playoffState
     const rFromSrv = (srv && srv.homeScore != null && srv.awayScore != null)
       ? { homeScore: srv.homeScore, awayScore: srv.awayScore, penaltyWinner } : null;
-    const r = results[sch.id] ? { ...results[sch.id], penaltyWinner } : rFromSrv;
+    const r = results[sch.id] ? { ...results[sch.id], penaltyWinner: results[sch.id].penaltyWinner || penaltyWinner } : rFromSrv;
     const { hl, lbl } = predHL(p, r);
     const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
     const locked = (!!r || Date.now() >= matchStart.getTime()) && !session.isAdmin;
