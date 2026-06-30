@@ -929,7 +929,7 @@ function rPBodyPOAdminView() {
     } else {
       html += `<div class="mc" style="${hl}">
         <div class="mm"><div class="mg" style="font-size:10px">${roundLabel}</div><div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${timeLabel}</div><span class="sb ${started||r?'done':'up'}">${r?'Сыгран':started?'🔒 Начался':'Предстоит'}</span>${lbl}</div>
-        <div style="flex:1">${sch.lbl?`<div style="font-size:10px;color:var(--muted);margin-bottom:4px">${sch.lbl}</div>`:''}<div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div>${realInfo}</div></div>`;
+        <div style="flex:1"><div class="mts"><div class="mt"><b>${hFlag} ${home}</b></div>${predDisp}<div class="mt r"><b>${away} ${aFlag}</b></div></div>${realInfo}</div></div>`;
     }
   });
 
@@ -1042,8 +1042,8 @@ function rPBodyPO() {
       : sch.t + ' МСК';
     const hFlag = gFlag(home), aFlag = gFlag(away);
     const roundLabel = PO_LABEL[sch._roundId] || sch._roundId;
-    const penNote = (r && r.penaltyWinner) ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:2px">🏆 по пенальти: <b style="color:var(--text)">${r.penaltyWinner}</b></div>` : '';
-    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b></div>${penNote}` : '';
+    const penTxt = (r && r.penaltyWinner) ? ` 🏆 по серии пенальти: <b style="color:var(--text)">${r.penaltyWinner}</b>` : '';
+    const realInfo = r ? `<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Реальный: <b style="color:var(--text)">${r.homeScore}:${r.awayScore}</b>${penTxt}</div>` : '';
 
     if (!home && !away) {
       html += `<div class="mc">
@@ -1106,7 +1106,15 @@ function scrollActiveTab(tabsEl) {
   const active = tabsEl.querySelector('.tab.active');
   if (active) active.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
 }
-function gFlag(n) { for (const a of Object.values(GROUPS)) { const t = a.find(t => t.name === n); if (t) return t.flag; } return ''; }
+const FLAG_ALIAS = {
+  'Босния и Герцеговина':'🇧🇦','Босния':'🇧🇦',
+  'Кот-д\'Ивуар':'🇨🇮','ДР Конго':'🇨🇩','Кабо-Верде':'🇨🇻',
+  'Эквадор':'🇪🇨','Сенегал':'🇸🇳','Австрия':'🇦🇹','Хорватия':'🇭🇷',
+  'Алжир':'🇩🇿','Гана':'🇬🇭','Норвегия':'🇳🇴','Швеция':'🇸🇪',
+  'Япония':'🇯🇵','Парагвай':'🇵🇾','Марокко':'🇲🇦','Египет':'🇪🇬',
+  'Колумбия':'🇨🇴','Узбекистан':'🇺🇿','Иордания':'🇯🇴','Панама':'🇵🇦'
+};
+function gFlag(n) { if (FLAG_ALIAS[n]) return FLAG_ALIAS[n]; for (const a of Object.values(GROUPS)) { const t = a.find(t => t.name === n); if (t) return t.flag; } return ''; }
 function rPlayoff() {
   document.getElementById('page-playoff').innerHTML =
     `<div class="stitle">Плей-офф</div>
@@ -1142,9 +1150,11 @@ function rBracket() {
       const matchRes = schSlot ? results[schSlot.id] : null;
       const hScore = matchRes ? matchRes.homeScore : m.homeScore;
       const aScore = matchRes ? matchRes.awayScore : m.awayScore;
-      // Победитель автоматически по счёту
+      // Победитель серии пенальти (если ничья в основное время)
+      const penWinner = matchRes ? matchRes.penaltyWinner : (m.penaltyWinner || null);
+      // Победитель: по счёту, при ничьей — по пенальти, иначе из winner
       const autoWinner = (hScore != null && aScore != null)
-        ? (hScore > aScore ? m.home : hScore < aScore ? m.away : m.winner)
+        ? (hScore > aScore ? m.home : hScore < aScore ? m.away : (penWinner || m.winner))
         : m.winner;
       const hW = autoWinner === m.home && hOk;
       const aW = autoWinner === m.away && aOk;
