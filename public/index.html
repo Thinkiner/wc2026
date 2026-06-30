@@ -928,9 +928,13 @@ function rPBodyPOAdminView() {
     const p = poPreds[key];
     const hasP = p && p.h != null && p.a != null;
     // Результат: сначала из match_results по match_id, потом из playoffState
-    const r = results[sch.id] || ((srv && srv.homeScore != null && srv.awayScore != null)
+    let r = results[sch.id] || ((srv && srv.homeScore != null && srv.awayScore != null)
       ? { homeScore: srv.homeScore, awayScore: srv.awayScore } : null);
-        const { hl, lbl } = predHL(hasP ? p : null, r);
+    // Ничья + пенальти — сторона победителя для корректного подсчёта
+    if (r && r.penaltyWinner && r.homeScore === r.awayScore) {
+      r = { ...r, poWinnerSide: r.penaltyWinner === home ? 1 : r.penaltyWinner === away ? -1 : 0 };
+    }
+    const { hl, lbl } = predHL(hasP ? p : null, r);
     const hFlag = gFlag(home), aFlag = gFlag(away);
     const predDisp = hasP
       ? `<div class="sdisp"><div class="sbox has">${p.h}</div><span class="sep">:</span><div class="sbox has">${p.a}</div></div>`
@@ -1054,7 +1058,11 @@ function rPBodyPO() {
     // Результат: сначала из match_results по match_id (sch.id), потом из playoffState
     const rFromSrv = (srv && srv.homeScore != null && srv.awayScore != null)
       ? { homeScore: srv.homeScore, awayScore: srv.awayScore, penaltyWinner } : null;
-    const r = results[sch.id] ? { ...results[sch.id], penaltyWinner: results[sch.id].penaltyWinner || penaltyWinner } : rFromSrv;
+    let r = results[sch.id] ? { ...results[sch.id], penaltyWinner: results[sch.id].penaltyWinner || penaltyWinner } : rFromSrv;
+    // Если ничья + пенальти — добавляем сторону победителя для корректного подсчёта
+    if (r && r.penaltyWinner && r.homeScore === r.awayScore) {
+      r = { ...r, poWinnerSide: r.penaltyWinner === home ? 1 : r.penaltyWinner === away ? -1 : 0 };
+    }
     const { hl, lbl } = predHL(p, r);
     const matchStart = new Date(sch.d + 'T' + (sch.t || '23:00') + ':00+03:00');
     const locked = (!!r || Date.now() >= matchStart.getTime()) && !session.isAdmin;
