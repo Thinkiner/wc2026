@@ -475,6 +475,56 @@ async function startApp() {
   goP(session.isAdmin ? 'groups' : 'predict');
 }
 
+// ── АВТОПРОДВИЖЕНИЕ ПОБЕДИТЕЛЕЙ ПЛЕЙ-ОФФ ──────────
+// Определяет победителя матча по счёту (или пенальти при ничьей)
+function poMatchWinner(sch, r) {
+  if (!r || r.homeScore == null || r.awayScore == null) return null;
+  if (r.homeScore > r.awayScore) return sch.h;
+  if (r.homeScore < r.awayScore) return sch.a;
+  // Ничья — по пенальти
+  if (r.penaltyWinner) return r.penaltyWinner;
+  return null;
+}
+function poMatchLoser(sch, r) {
+  const w = poMatchWinner(sch, r);
+  if (!w) return null;
+  return w === sch.h ? sch.a : sch.h;
+}
+// Вписывает победителей qf→sf→fin и проигравших sf→3rd прямо в SCH
+function autoAdvancePlayoff() {
+  // Индексы слотов по раундам внутри SCH
+  const byRound = {};
+  SCH.forEach((s, i) => {
+    if (['qf','sf','3rd','fin'].includes(s.g)) {
+      if (!byRound[s.g]) byRound[s.g] = [];
+      byRound[s.g].push({ sch: s, id: i + 1, idx: byRound[s.g].length });
+    }
+  });
+
+  // qf → sf: победитель qf[idx] идёт в sf[floor(idx/2)], сторона по чётности
+  (byRound.qf || []).forEach(({ sch, id, idx }) => {
+    const w = poMatchWinner(sch, results[id]);
+    const sfArr = byRound.sf || [];
+    const target = sfArr[Math.floor(idx / 2)];
+    if (!target) return;
+    const side = idx % 2 === 0 ? 'h' : 'a';
+    // Заполняем только если пусто или изменилось (не затираем ручной ввод команды которая уже там)
+    if (w) target.sch[side] = w;
+  });
+
+  // sf → fin (победители) и sf → 3rd (проигравшие)
+  const sfArr = byRound.sf || [];
+  const finM = (byRound.fin || [])[0];
+  const thirdM = (byRound['3rd'] || [])[0];
+  sfArr.forEach(({ sch, id, idx }) => {
+    const w = poMatchWinner(sch, results[id]);
+    const l = poMatchLoser(sch, results[id]);
+    const side = idx % 2 === 0 ? 'h' : 'a';
+    if (finM && w) finM.sch[side] = w;
+    if (thirdM && l) thirdM.sch[side] = l;
+  });
+}
+
 async function loadAllData() {
   try {
     // Все пользователи делают эти запросы
@@ -484,6 +534,7 @@ async function loadAllData() {
       apiGetPlayoff(),
     ]);
     results = res;
+  autoAdvancePlayoff(); // вписываем победителей плей-офф в SCH
     myPreds = preds;
     playoffState = po;
     // Все грузят allPreds для таблицы лидеров
@@ -674,6 +725,7 @@ function setScore(id, side, val) {
   if (!results[id]) results[id] = { homeScore: null, awayScore: null, penaltyWinner: null };
   const v = val === '' ? null : Math.max(0, parseInt(val) || 0);
   results[id][side === 'home' ? 'homeScore' : 'awayScore'] = v;
+  autoAdvancePlayoff(); // обновляем следующий раунд плей-офф
   const card = document.querySelector(`[data-mid="${id}"]`);
   if (card) {
     const r = results[id]; const ok = r.homeScore !== null && r.awayScore !== null;
@@ -693,6 +745,7 @@ function setScore(id, side, val) {
 function setPenaltyWinner(id, winner) {
   if (!results[id]) results[id] = { homeScore: null, awayScore: null, penaltyWinner: null };
   results[id].penaltyWinner = results[id].penaltyWinner === winner ? null : winner;
+  autoAdvancePlayoff(); // обновляем следующий раунд плей-офф
   // Перерисовываем только эту карточку
   rMBody();
   clearTimeout(scoreTimers['pen_' + id]);
